@@ -17,7 +17,7 @@
 #include <math.h>
 #include <time.h>
 #include <zqBasicMath/math_const.h>
-
+#include <zqBasicMath/math_type_promote.h>
 namespace zq{
 
 //	========================================
