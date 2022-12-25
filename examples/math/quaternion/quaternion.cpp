@@ -12,6 +12,7 @@
 #include<zqBasicMath/math_matrix.h>
 #include<zqBasicMath/math_quaternion.h>
 #include<zqBasicMath/math_lookup_table.h>
+#include<zqBasicMath/math_dense.h>
 int main() {
 	zq::Matrix3x3<double>	M[3];
 	zq::Quaternion<double>	q[3];
