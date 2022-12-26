@@ -64,6 +64,10 @@ public:
 		value.assign(vec.value.begin(), vec.value.end());
 	}
 
+	void push_back(const T& v) {
+		value.push_back(v);
+	}
+
 	/**
 		Reset the vector, clear everything
 	*/
@@ -292,7 +296,7 @@ protected:
 template<class T> inline std::ostream& operator << (std::ostream& stream, const DenseVector<T> rhs) {
 	stream << "(";
 	for (int i = 0; i < rhs.Dim(); i++) {
-		stream << "\t" << rhs[i];
+		stream << "," << rhs[i];
 	}
 	stream << ")"<<std::endl;
 	return stream;

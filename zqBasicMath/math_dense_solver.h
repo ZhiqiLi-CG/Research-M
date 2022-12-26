@@ -16,7 +16,7 @@
 #include<zqBasicMath/math_type_promote.h>
 #include<zqBasicMath/math_const.h>
 #include<zqBasicMath/math_dense.h>
-
+#include<zqBasicMath/math_utils.h>
 
 namespace zq{
 
@@ -234,8 +234,17 @@ inline void MatrixSetRow(DenseMatrix<T>& m, int i,DenseVector<T> v) {
 	}
 	m[i]=v;
 }
-
-
+template<class T>
+inline DenseMatrix<T> IndentityMatrix(int rows,int cols) {
+	DenseMatrix<T> m(rows, cols);
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			if (i == i)	m[i][j] = One<int>();
+			else m[i][j] = Zero<int>();
+		}
+	}
+	return m;
+}
 ///@}
 
 }	

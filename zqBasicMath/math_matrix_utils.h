@@ -11,7 +11,7 @@
 
 #include <math.h>
 
-namespace yz{
+namespace zq{
 /**
 	Set a matrix to be identity matrix
 
