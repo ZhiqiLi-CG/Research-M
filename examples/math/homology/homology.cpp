@@ -13,6 +13,7 @@
 #include<zqBasicMath/math_quaternion.h>
 #include<zqBasicMath/math_homology.h>
 #include<zqBasicMath/math_dense.h>
+
 int main() {
 	/// The test case is from: https://zhuanlan.zhihu.com/p/41264363
 	std::vector<std::vector<int>> complex_index{

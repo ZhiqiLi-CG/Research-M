@@ -47,9 +47,9 @@ message(STATUS "${PROJECT_BINARY_DIR}/data_path.h created,\n DATA_PATH=${MATH_DA
 # Options and config
 ###############################################
 include(zqBasicMath/zqBasicMath.cmake)
-include(zqBasicUtils/zqBasicUtils.cmake)
+
 include_directories(${zqBasicMath_INCLUDE_DIRS})
-include_directories(${zqBasicUtils_INCLUDE_DIRS})
+
 
 # ---------- CUDA ----------
 if(yzLib_ENABLE_CUDA)

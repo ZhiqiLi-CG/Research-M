@@ -35,7 +35,7 @@ int main() {
 	scanf("%d", &example);
 	if (example == 0) {
 		zq::DenseVector<zq::Vec3f> points;
-		float reso = 20, r = 0.6, ran=0;
+		float reso = 50, r = 0.6, ran=0;
 		for (int i = 0; i < reso; i++) {
 			points.push_back(
 				zq::Vec3f(
@@ -51,7 +51,7 @@ int main() {
 	}
 	else if (example == 1) {
 		zq::DenseVector<zq::Vec3f> points;
-		float reso = 20, r = 0.6, ran = 0.3;
+		float reso = 100, r = 0.6, ran = 0.3;
 		for (int i = 0; i < reso; i++) {
 			points.push_back(
 				zq::Vec3f(
@@ -67,7 +67,7 @@ int main() {
 	}
 	else if (example == 2) {
 		zq::DenseVector<zq::Vec3f> points;
-		float reso = 15, r = 0.6, ran = 0.3;
+		float reso = 30, r = 0.6, ran = 0.3;
 		for (int i = 0; i < reso; i++) {
 			points.push_back(
 				zq::Vec3f(
@@ -90,15 +90,15 @@ int main() {
 	}
 	else if (example == 3) {
 		zq::DenseVector<zq::Vec3f> points;
-		float reso = 100, r = 0.6, ran = 0.1;
+		float reso = 1000, r = 0.6, ran =0;
 		float sqrt_reso = sqrt(reso);
 		for (int i = 0; i < sqrt_reso; i++) {
 			for (int j = 0; j < sqrt_reso; j++) {
 				points.push_back(
 					zq::Vec3f(
-						(r + zq::randFloatingPointNumber(0.0f, ran)) * cos(2 * ZQ_PI * i / reso)* cos(ZQ_PI * j / reso),
-						(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(2 * ZQ_PI * i / reso)* cos(ZQ_PI * j / reso),
-						(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(ZQ_PI * j / reso)
+						(r + zq::randFloatingPointNumber(0.0f, ran)) * cos(2 * ZQ_PI * i / sqrt_reso)* sin(ZQ_PI * j / sqrt_reso),
+						(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(2 * ZQ_PI * i / sqrt_reso)* sin(ZQ_PI * j / sqrt_reso),
+						(r + zq::randFloatingPointNumber(0.0f, ran)) * cos(ZQ_PI * j /sqrt_reso)
 					));
 			}
 		}

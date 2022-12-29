@@ -32,7 +32,7 @@ class DenseVector{
 public:
 	std::vector<T>	value;
 
-	typedef PROMOTE_T_TO_FLOAT YZ_REAL;
+	typedef PROMOTE_T_TO_FLOAT ZQ_REAL;
 
 public:
 	//	constructors
@@ -236,8 +236,8 @@ public:
 	/**
 		Return normalized vector, but don't change old data
 	*/
-	inline DenseVector<YZ_REAL> Normalize() const{
-		DenseVector<YZ_REAL> result(*this);
+	inline DenseVector<ZQ_REAL> Normalize() const{
+		DenseVector<ZQ_REAL> result(*this);
 		result.SetNormalize();
 		return result;
 	}
@@ -246,7 +246,7 @@ public:
 		normalize this vector
 	*/
 	inline DenseVector& SetNormalize(){
-		YZ_REAL length = Length();
+		ZQ_REAL length = Length();
 		(*this) /= length;
 		return *this;
 	}
@@ -269,14 +269,14 @@ public:
 		return sum;
 	}
 
-	inline YZ_REAL SquareLength() const{
+	inline ZQ_REAL SquareLength() const{
 		T sqr_sum = 0;
 		for( int i=0; i<Dim(); i++ )
 			sqr_sum += value[i] * value[i];
 		return sqr_sum;
 	}
 
-	inline YZ_REAL Length() const{
+	inline ZQ_REAL Length() const{
 		return sqrt(SquareLength());
 	}
 protected:

@@ -20,6 +20,10 @@
 #include <zqBasicMath/math_type_promote.h>
 #include <zqBasicMath/math_dense.h>
 #include <zqBasicMath/math_dense_solver.h>
+#include <zqBasicMath/math_sparse_matrix.h>
+#include <zqBasicMath/math_sparse_vector.h>
+#include <zqBasicUtils/utils_hash.h>
+
 namespace zq {
 
 	/**
@@ -36,6 +40,9 @@ namespace zq {
 			points.assign(data, data + dim_num);
 		}
 	public:
+		/**
+			find the sub simplex of this simplex
+		*/
 		void FindSubSimplex(std::vector<Simplex<T>>& subsimplex) {
 			std::vector<bool> use(subsimplex.size());
 			while (AddIndex(use)) {
@@ -43,6 +50,10 @@ namespace zq {
 			}
 			SortSimplex(subsimplex);
 		}
+		/**
+			compare between simplex, the priority is:
+				dim > simplex_index > points content
+		*/
 		bool operator< (const Simplex& rhs)  const
 		{
 			if (points.size() < rhs.points.size()) return true;
@@ -60,34 +71,21 @@ namespace zq {
 		int Dim() const {
 			return points.size();
 		}
+		
 		void SortSimplex(std::vector<Simplex<T>>& subsimplex) {
 			std::sort(subsimplex.begin(), subsimplex.end());
 		}
+		
 		T index(int i) const {
 			if (i >= points.size()) {
 				throw "index out of range";
 			}
 			return points[i];
 		}
-	public:
-		// hash
 
-	private:
+	protected:
+		// following two functions are used to find all subsimplex 
 		bool AddIndex(std::vector<bool>& index) {
-			std::vector<bool> tem_index = index;
-			for (int i = 0; i < tem_index.size(); i++) {
-				if (tem_index[i] == false) {
-					tem_index[i] = true;
-					index = tem_index[i];
-					return true;
-				}
-				else {
-					tem_index[i] = false;
-				}
-			}
-			return false;
-		}
-		bool AddIndexWithOrder(std::vector<bool>& index) {
 			std::vector<bool> tem_index = index;
 			for (int i = 0; i < tem_index.size(); i++) {
 				if (tem_index[i] == false) {
@@ -112,6 +110,7 @@ namespace zq {
 		}
 	};
 }
+// provide equal and hash for simplex
 namespace std {
 	template<>
 	struct hash<zq::Simplex<int>> {
@@ -126,9 +125,8 @@ namespace std {
 		}
 
 	};
-
 	template<>
-	struct equal_to<zq::Simplex<int>> {//等比的模板定制
+	struct equal_to<zq::Simplex<int>> {
 	public:
 		bool operator()(const zq::Simplex<int>& p1, const zq::Simplex<int>& p2) const
 		{
@@ -141,23 +139,32 @@ namespace std {
 
 	};
 }
+
 namespace zq{
-	//Simplical_Complex is orgamized by index
+	/**
+		Simplical_Complex is orgamized by index
+		For the solver of Simplical_Complex, 2 types of boundary matrix are provided here:
+			1. DenseMatrix, here the matrix is standard and is row-ordered
+			2. SparseMatrix, and this type matrix is transposed.
+	*/
 	template<typename T> 
 	class Simplical_Complex {
 	public:
 		std::vector<T> points;
 		std::vector<Simplex<int>> simplex;
 		Simplical_Complex() {}
+	
 		template<typename TYPE> Simplical_Complex(const TYPE* data, int dim_num) {
 			points.resize(dim_num);
 			points.assign(data, data + dim_num);
 		}
+		
 		template<typename TYPE> Simplical_Complex(const TYPE* data, int dim_num,const std::vector<Simplex<int>>& simplex) {
 			points.resize(dim_num);
 			points.assign(data, data + dim_num);
 			this->simplex = simplex;
 		}
+		
 		template<typename TYPE> Simplical_Complex(const TYPE* data, int dim_num, const std::vector<std::vector<int>>& simplex) {
 			points.resize(dim_num);
 			points.assign(data, data + dim_num);
@@ -167,14 +174,18 @@ namespace zq{
 				this->simplex[i] = Simplex<int>(&tem_simplex[i][0], simplex[i].size());
 			}
 		}
+	
 	public:
 		int SimplexNumber() const{
 			return simplex.size();
 		}
+
 		int Dim()  const {
 			return points.size();
 		}
-
+		/**
+			return all n-chains of the complex simplex
+		*/
 		void NChain(int n,std::vector<Simplex<int>>& result) {
 			for (int i = 0; i < simplex.size(); i++) {
 				if(simplex[i].Dim()==n+1){
@@ -182,6 +193,7 @@ namespace zq{
 				}
 			}
 		}
+		
 		std::vector<int> BettiNumber(int n = -1) {
 			std::vector<int> betti;
 			std::vector<std::vector<Simplex<int>>> chains;
@@ -222,12 +234,21 @@ namespace zq{
 			}
 			return betti;
 		}
+		
 		DenseMatrix<int> BoundaryMatrix(int p,int n) {
 			std::vector<Simplex<int>> pchain, nchain;
 			NChain(p, pchain);
 			NChain(n, nchain);
 			return BoundaryMatrix(pchain,nchain);
 		}
+
+		SparseMatrixLIL<int> BoundaryMatrixSparse(int p, int n) {
+			std::vector<Simplex<int>> pchain, nchain;
+			NChain(p, pchain);
+			NChain(n, nchain);
+			return BoundaryMatrixSparse(pchain, nchain);
+		}
+		
 		DenseMatrix<int> ReducedBoundaryMatrix(
 			int p, 
 			int n,
@@ -244,9 +265,32 @@ namespace zq{
 				nullity
 			);
 		}
+
+		SparseMatrixLIL<int> ReducedBoundaryMatrixSparse(
+			int p,
+			int n,
+			int& rank,
+			int& nullity
+		) {
+			std::vector<Simplex<int>> pchain, nchain;
+			NChain(p, pchain);
+			NChain(n, nchain);
+			SparseMatrixLIL<int> boundary_m = BoundaryMatrixSparse(pchain, nchain);
+			return ReduceBoundaryMatrix_SmithNorm(
+				boundary_m,
+				rank,
+				nullity
+			);
+		}
+		
 		DenseMatrix<int> BoundaryMatrix() {
 			return BoundaryMatrix(simplex, simplex);
 		}
+
+		SparseMatrixLIL<int> BoundaryMatrixSparse() {
+			return BoundaryMatrixSparse(simplex, simplex);
+		}
+
 		DenseMatrix<int> ReducedBoundaryMatrix(
 			DenseMatrix<int>& memory_m
 		) {
@@ -258,6 +302,21 @@ namespace zq{
 				memory_m
 			);
 		}
+		
+		SparseMatrixLIL<int> ReducedBoundaryMatrixSparse(
+			SparseMatrixLIL<int>& memory_m
+		) {
+			SparseMatrixLIL<int> boundary_m = BoundaryMatrixSparse();
+			//std::cout << boundary_m << std::endl;
+			//printf("???? %d %d\n", Cols(boundary_m), Rows(boundary_m));
+			//CheckUpperTriangleMatrix(boundary_m);
+			//printf("begin reduced\n");
+			return ReduceBoundaryMatrix_Echelon(
+				boundary_m,
+				memory_m
+			);
+		}
+
 		static bool CheckReduced(const DenseMatrix<int>& boundary_m) {
 			std::set<int> low_set;
 			for (int i = 0; i < Cols(boundary_m); i++) {
@@ -272,6 +331,22 @@ namespace zq{
 			}
 			return true;
 		}
+		
+		static bool CheckReduced(const SparseMatrixLIL<int>& boundary_m) {
+			std::set<int> low_set;
+			for (int i = 0; i < boundary_m.row_num; i++) {
+				int low_i = Low(boundary_m, i);
+				if (low_i != -1) {
+					if (low_set.find(Low(boundary_m, i)) != low_set.end()) {
+						throw "";
+						return false;
+					}
+					low_set.insert(low_i);
+				}
+			}
+			return true;
+		}
+
 		template<typename T>
 		static void AssignSimplexIndex(
 				std::vector<zq::Simplical_Complex<T>>& complex_list
@@ -295,6 +370,7 @@ namespace zq{
 				}
 			}
 		}
+		
 		template<typename T>
 		static void AssignSimplexIndexSort(
 			std::vector<zq::Simplical_Complex<T>>& complex_list
@@ -313,8 +389,9 @@ namespace zq{
 				//}
 			}
 		}
+		
 		static void ReadIntervals(
-			DenseMatrix<int> boundary_m,
+			const DenseMatrix<int>& boundary_m,
 			std::vector<std::pair<int, int>>& interval
 		){
 			std::unordered_map<int, int> start_map;
@@ -336,6 +413,31 @@ namespace zq{
 				}
 			}
 		}
+
+		static void ReadIntervals(
+			const SparseMatrixLIL<int>& boundary_m,
+			std::vector<std::pair<int, int>>& interval
+		) {
+			std::unordered_map<int, int> start_map;
+			for (int i = 0; i < boundary_m.row_num; i++) {
+				int low_i = Low(boundary_m, i);
+				if (low_i == -1) {
+					interval.push_back(std::pair<int, int>(i, -1));
+					start_map.insert(std::pair<int, int>(i, interval.size() - 1));
+				}
+				else {
+					auto iter = start_map.find(low_i);
+					if (iter == start_map.end()) {
+						interval.push_back(std::pair<int, int>(low_i, i));
+						start_map.insert(std::pair<int, int>(low_i, interval.size() - 1));
+					}
+					else {
+						interval[iter->second].second = i;
+					}
+				}
+			}
+		}
+		
 		static bool CheckUpperTriangleMatrix(const DenseMatrix<int>& boundary_m) {
 			for (int i = 0; i < Rows(boundary_m); i++) {
 				for (int j = 0; j < Cols(boundary_m); j++) {
@@ -346,6 +448,19 @@ namespace zq{
 			}
 			return true;
 		}
+		
+		// This upper means the original standard boundary matrix is upper matrix
+		static bool CheckUpperTriangleMatrix(const SparseMatrixLIL<int>& boundary_m) {			
+			for (int i = 0; i < boundary_m.row_num; i++) {
+				for (int j = 0; j < boundary_m.rows[i].size(); j++) {
+					if (boundary_m.rows[i][j] >=i ) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
 		static DenseMatrix<int> ReduceBoundaryMatrix_Echelon(
 			const DenseMatrix<int>& boundary_m,
 			DenseMatrix<int>& memory_m
@@ -378,6 +493,39 @@ namespace zq{
 			}
 			return result_boundary_m;
 		}
+
+		static SparseMatrixLIL<int> ReduceBoundaryMatrix_Echelon(
+			const SparseMatrixLIL<int>& boundary_m,
+			SparseMatrixLIL<int>& memory_m
+		) {
+			SparseMatrixLIL<int> result_boundary_m = boundary_m;
+			memory_m = SparseMatrixLIL<int>::IndentityMatrix(result_boundary_m.row_num, result_boundary_m.col_num);
+			for (int i = 0; i < result_boundary_m.row_num; i++) {
+				bool end_loop = false;
+				while (!end_loop) {
+					end_loop = true;
+					for (int j = 0; j < i; j++) {
+						int low_i = Low(result_boundary_m, i);
+						int low_j = Low(result_boundary_m, j);
+						if (low_i == low_j && low_i != -1) {
+							//printf("%d %d %d\n", i, j,low_i);
+							result_boundary_m.SetSparseRow(
+								result_boundary_m.GetSparseRow(i) ^ result_boundary_m.GetSparseRow(j)
+								, i
+							);
+							memory_m.SetSparseRow(
+								memory_m.GetSparseRow(i) ^ memory_m.GetSparseRow(j)
+								, i
+							);
+							end_loop = false;
+						}
+					}
+
+				}
+			}
+			return result_boundary_m;
+		}
+		
 		static int Low(const DenseMatrix<int>& matrix, int index) {
 			if (index >= Cols(matrix)) {
 				throw "index out of range";
@@ -387,6 +535,15 @@ namespace zq{
 			}
 			return -1;
 		}
+
+		static int Low(const SparseMatrixLIL<int>& matrix, int index) {
+			if (index >= matrix.row_num) {
+				throw "index out of range";
+			}
+			if (matrix.rows[index].size() == 0) return -1;
+			return matrix.rows[index][matrix.rows[index].size() - 1];
+		}
+
 		static bool CheckFace(const Simplex<int>& child, const Simplex<int>& fa) {
 			std::set<int> fa_set(fa.points.begin(),fa.points.end());
 			if (fa.Dim() != child.Dim() + 1) return false;
@@ -397,6 +554,7 @@ namespace zq{
 			}
 			return true;
 		}
+		
 		static DenseMatrix<int> BoundaryMatrix(
 			const std::vector<Simplex<int>>& pchain,
 			const std::vector<Simplex<int>>& nchain
@@ -416,6 +574,26 @@ namespace zq{
 			}
 			return boudary_m;
 		}
+
+		static SparseMatrixLIL<int> BoundaryMatrixSparse(
+			const std::vector<Simplex<int>>& pchain,
+			const std::vector<Simplex<int>>& nchain
+		) {
+			//special -1
+			if (pchain.size() == 0) {
+				return SparseMatrixLIL<int>(nchain.size(),1 );
+			}
+			SparseMatrixLIL<int> boudary_m(nchain.size(), pchain.size());
+			for (int i = 0; i < nchain.size(); i++) {
+				for (int j = 0; j < pchain.size(); j++) {
+					if (CheckFace(pchain[j], nchain[i])) {
+						boudary_m.InsertElement(1, i, j);
+					}
+				}
+			}
+			return boudary_m;
+		}
+
 		// https://zhuanlan.zhihu.com/p/41264363
 		//https://triangleinequality.wordpress.com/2014/01/23/computing-homology/ 
 		static DenseMatrix<int> ReduceBoundaryMatrix_SmithNorm( 
@@ -432,6 +610,22 @@ namespace zq{
 			nullity = Cols(result_boundary_m) - rank;
 			return result_boundary_m;
 		}
+
+		static SparseMatrixLIL<int> ReduceBoundaryMatrix_SmithNorm(
+			const SparseMatrixLIL<int>& boundary_m,
+			int& rank,
+			int& nullity
+		) {
+			SparseMatrixLIL<int> result_boundary_m = boundary_m;
+			if (boundary_m.col_num == 0 || boundary_m.row_num == 0) {
+				rank = nullity = 0;
+				return boundary_m;
+			}
+			rank = _Recusive_SmithNorm(result_boundary_m, 0);
+			nullity = result_boundary_m.row_num - rank;
+			return result_boundary_m;
+		}
+
 		static int _Recusive_SmithNorm(
 			DenseMatrix<int>& boundary_m,
 			int cur
@@ -483,8 +677,19 @@ namespace zq{
 				return cur;
 			}
 		}
+
+		static int _Recusive_SmithNorm(
+			SparseMatrixLIL<int>& boundary_m,
+			int cur
+		) {
+			throw "incomplete";
+		}
 		// Persistent Homology — a Survey, Herbert Edelsbrunnerand John Harer
 	};
+	
+	/**
+		Helper function for VR complex construction
+	*/
 	void _FindSubsets(
 		std::vector<int>& subset,
 		const std::vector<int>& index_set,
@@ -505,6 +710,10 @@ namespace zq{
 			subset.pop_back();
 		}
 	}
+
+	/**
+		Helper function for VR complex construction
+	*/
 	void FilterTuples(
 		const std::vector<int>& index_set,
 		const std::function<bool(const std::vector<int>&)>& filter,
@@ -514,13 +723,18 @@ namespace zq{
 		std::vector<int> subset;
 		_FindSubsets(subset, index_set, k, 0, filter, results);
 	}
+
 	// Calculate Distance Function, which is provided for you to define by yourself
 	template<typename Type>
 	float Distance(const Type& p1, const Type& p2) {
 		return (p1 - p2).Length();
 	}
+	
 	// Afra Zomorodian algorithm: find the VR complex
 	// Note: This function is not suitable for complex with high dimensional
+	/**
+		Construct VR complex for discrete points
+	*/
 	template<typename ParaType, typename PointType>
 	void VRComplexConstruct(
 		const ParaType& epsilon,
@@ -546,6 +760,81 @@ namespace zq{
 		}
 		//printf("results.size():%d\n", results.size());
 	}
+
+	void FindWitness(
+		const std::vector<int>& index,
+		int m,
+		std::vector<int>& witness
+	) {
+		std::vector<int> tem_index(index);
+		for (int i = tem_index.size() - 1; i >= 0; i--) {
+			int j = (int)(randNumber(0, i + 1));
+			mySwap(tem_index[i], tem_index[j]);
+		}
+		witness.resize(m);
+		for (int i = 0; i < m; i++) {
+			witness[i] = tem_index[i];
+		}
+	}
+
+	void FindWitness(
+		int n,
+		int m,
+		std::vector<int>& witness
+	) {
+		std::vector<int> index(n);
+		for (int i = 0; i < n; i++) index[i] = i;
+		FindWitness(index, m, witness);
+	}
+
+	template<typename ParaType, typename PointType>
+	void VRWitnessComplexConstruct(
+		const ParaType& epsilon,
+		const std::vector<PointType>& points,
+		const std::vector<int>& witness_index,
+		int k,
+		std::vector<std::vector<int>>& results
+	) {
+		std::vector<int> index_set(witness_index);
+		std::unordered_set<std::pair<int, int>, utils::BitwiseHasher<std::pair<int, int>>> allowed_pair;
+		std::function<bool(const PointType&, const PointType&)> distance_filter = [&](
+			const PointType& pos1,
+			const PointType& pos2
+			) {
+				for (int i = 0; i < points.size(); i++) {
+					if (Distance(pos1, points[i]) <= epsilon && Distance(pos2, points[i]) <= epsilon) {
+						return true;
+					}
+				}
+				return false;
+		};
+		for (int i = 0; i < index_set.size(); i++) {
+			for (int j = i+1; j < index_set.size(); j++) {
+				if (distance_filter(points[index_set[i]], points[index_set[j]])) {
+					allowed_pair.insert(std::pair<int, int>(index_set[i], index_set[j]));
+				}
+			}
+		}
+		std::function<bool(const std::vector<int>&)> filter = [&](const std::vector<int>& index) {
+			for (int i = 0; i < index.size(); i++) {
+				for (int j = i + 1; j < index.size(); j++) {
+					if (allowed_pair.find(std::pair<int,int>(index[i],index[j]))==allowed_pair.end() &&
+						allowed_pair.find(std::pair<int, int>(index[j], index[i])) == allowed_pair.end()
+						) return false;
+				}
+			}
+			return true;
+		};
+		//printf("points.size():%d\n", points.size());
+		for (int i = 1; i <= k; i++) {
+			FilterTuples(index_set, filter, i, results);
+		}
+		//printf("results.size():%d\n", results.size());
+	}
+
+	/**
+		Find the epsilon intervals
+	*/
 	template<typename Type>
 	void CalculatePersistentData(
 		const std::vector<float>& epsilon_list,
@@ -583,6 +872,52 @@ namespace zq{
 			}
 			else end_epsilon = max_epsilon;			
 			
+			//printf("%d,start_epsilon, end_epsilon:%f %f\n", feture_type[i], start_epsilon, end_epsilon);
+			epsilon_interval.push_back(std::pair<float, float>(start_epsilon, end_epsilon));
+		}
+	}
+
+	template<typename Type>
+	void CalculatePersistentDataSparse(
+		const std::vector<float>& epsilon_list,
+		float max_epsilon,
+		std::vector<Simplical_Complex<Type>>& complex_list,
+		std::vector<std::pair<float, float>>& epsilon_interval,
+		std::vector<int>& feture_type
+	) {
+		//printf("begin\n");
+		Simplical_Complex<Type>::AssignSimplexIndexSort(complex_list);
+		printf("end assign index\n");
+		SparseMatrixLIL<int> memory_m;
+		int final_index = complex_list.size() - 1;
+		SparseMatrixLIL<int> boundary_m = complex_list[final_index].ReducedBoundaryMatrixSparse(memory_m);
+		printf("end get matrix\n");
+
+		//std::cout << "boundary_m:" << std::endl;
+		//std::cout << boundary_m << std::endl;
+
+		std::vector<std::pair<int, int>> interval;
+		Simplical_Complex<Type>::ReadIntervals(boundary_m, interval);
+		if (!Simplical_Complex<Type>::CheckReduced(boundary_m)) {
+			throw "bouandry_m is not redueced";
+		}
+
+		for (int i = 0; i < interval.size(); i++) {
+			//printf("interval:%d %d\n", interval[i].first, interval[i].second);
+			feture_type.push_back(complex_list[final_index].simplex[interval[i].first].Dim());
+		}
+		for (int i = 0; i < interval.size(); i++) {
+
+			int start_index = complex_list[final_index].simplex[interval[i].first].simplex_index;
+			//printf("start_index:%d,", start_index);
+			float start_epsilon = epsilon_list[start_index];
+			float end_epsilon;
+			if (interval[i].second != -1) {
+				int end_index = complex_list[final_index].simplex[interval[i].second].simplex_index;
+				end_epsilon = epsilon_list[end_index];
+			}
+			else end_epsilon = max_epsilon;
+
 			//printf("%d,start_epsilon, end_epsilon:%f %f\n", feture_type[i], start_epsilon, end_epsilon);
 			epsilon_interval.push_back(std::pair<float, float>(start_epsilon, end_epsilon));
 		}
