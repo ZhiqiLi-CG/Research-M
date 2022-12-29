@@ -1,5 +1,5 @@
 /***********************************************************/
-/**	
+/**
 \file
 \brief		Example of ios
 \details	Generate example for persistent homology and test the io
@@ -22,7 +22,7 @@ bool compare_read_write(
 	if (points.Dim() != test_points.Dim()) return false;
 	else {
 		for (int i = 0; i < points.Dim(); i++) {
-			if ((points[i]-test_points[i]).Length()>1e-5) {
+			if ((points[i] - test_points[i]).Length() > 1e-5) {
 				return false;
 			}
 		}
@@ -35,7 +35,7 @@ int main() {
 	scanf("%d", &example);
 	if (example == 0) {
 		zq::DenseVector<zq::Vec3f> points;
-		float reso = 50, r = 0.6, ran=0;
+		float reso = 20, r = 0.6, ran = 0;
 		for (int i = 0; i < reso; i++) {
 			points.push_back(
 				zq::Vec3f(
@@ -43,7 +43,7 @@ int main() {
 					(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(2 * ZQ_PI * i / reso),
 					0));
 		}
-		zq::writeDenseVectorPointsToFile((std::string(data_path)+std::string("/persistent_homology_one_cycle.dat")).c_str(), points);
+		zq::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_one_cycle.dat")).c_str(), points);
 		if (1) {
 			if (compare_read_write((std::string(data_path) + std::string("/persistent_homology_one_cycle.dat")).c_str(), points)) printf("\ninput and output match\n");
 			else printf("input and output mismatch\n");
@@ -51,12 +51,12 @@ int main() {
 	}
 	else if (example == 1) {
 		zq::DenseVector<zq::Vec3f> points;
-		float reso = 100, r = 0.6, ran = 0.3;
+		float reso = 20, r = 0.6, ran = 0.3;
 		for (int i = 0; i < reso; i++) {
 			points.push_back(
 				zq::Vec3f(
-					(r + zq::randFloatingPointNumber(-ran/2, ran/2)) * cos(2 * ZQ_PI * i / reso),
-					(r + zq::randFloatingPointNumber(-ran/2, ran/2)) * sin(2 * ZQ_PI * i / reso),
+					(r + zq::randFloatingPointNumber(-ran / 2, ran / 2)) * cos(2 * ZQ_PI * i / reso),
+					(r + zq::randFloatingPointNumber(-ran / 2, ran / 2)) * sin(2 * ZQ_PI * i / reso),
 					0));
 		}
 		zq::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_one_cycle_random.dat")).c_str(), points);
@@ -67,7 +67,7 @@ int main() {
 	}
 	else if (example == 2) {
 		zq::DenseVector<zq::Vec3f> points;
-		float reso = 30, r = 0.6, ran = 0.3;
+		float reso = 20, r = 0.6, ran = 0.3;
 		for (int i = 0; i < reso; i++) {
 			points.push_back(
 				zq::Vec3f(
@@ -78,7 +78,7 @@ int main() {
 		for (int i = 0; i < reso; i++) {
 			points.push_back(
 				zq::Vec3f(
-					r+(r + zq::randFloatingPointNumber(0.0f, ran)) * cos(2 * ZQ_PI * i / reso),
+					r + (r + zq::randFloatingPointNumber(0.0f, ran)) * cos(2 * ZQ_PI * i / reso),
 					0,
 					(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(2 * ZQ_PI * i / reso)));
 		}
@@ -90,15 +90,15 @@ int main() {
 	}
 	else if (example == 3) {
 		zq::DenseVector<zq::Vec3f> points;
-		float reso = 1000, r = 0.6, ran =0;
+		float reso = 1000, r = 0.6, ran = 0;
 		float sqrt_reso = sqrt(reso);
-		for (int i = 0; i < sqrt_reso; i++) {
-			for (int j = 0; j < sqrt_reso; j++) {
+		for (int j = 0; j < sqrt_reso; j++) {
+			for (int i = 0; i < sqrt_reso * sin(ZQ_PI * j / sqrt_reso); i++) {
 				points.push_back(
 					zq::Vec3f(
-						(r + zq::randFloatingPointNumber(0.0f, ran)) * cos(2 * ZQ_PI * i / sqrt_reso)* sin(ZQ_PI * j / sqrt_reso),
-						(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(2 * ZQ_PI * i / sqrt_reso)* sin(ZQ_PI * j / sqrt_reso),
-						(r + zq::randFloatingPointNumber(0.0f, ran)) * cos(ZQ_PI * j /sqrt_reso)
+						(r + zq::randFloatingPointNumber(0.0f, ran)) * cos(2 * ZQ_PI * i / sqrt_reso / sin(ZQ_PI * j / sqrt_reso)) * sin(ZQ_PI * j / sqrt_reso),
+						(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(2 * ZQ_PI * i / sqrt_reso / sin(ZQ_PI * j / sqrt_reso)) * sin(ZQ_PI * j / sqrt_reso),
+						(r + zq::randFloatingPointNumber(0.0f, ran)) * cos(ZQ_PI * j / sqrt_reso)
 					));
 			}
 		}
