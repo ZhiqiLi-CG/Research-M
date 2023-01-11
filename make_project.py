@@ -9,7 +9,7 @@ else:
 
 if __name__=='__main__':
     # first, update submodule
-    cmd= "git.exe submodule update --progress --init --force -- \"Research-M\""
+    cmd= "git.exe submodule update --progress --init --force"
     print(cmd)
     os.system(cmd)
     print("Finish Update Submodule")
