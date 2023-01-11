@@ -2,8 +2,8 @@ cmake_minimum_required (VERSION 3.2)
 
 message("This CMakeList.txt is written for 64bit system only")
 
-project (zqBasicMathExamples LANGUAGES CXX)
-set(zqBasicMath_ROOT_DIR ${CMAKE_SOURCE_DIR})
+project (ResearchMExamples LANGUAGES CXX)
+set(ResearchM_ROOT_DIR ${CMAKE_SOURCE_DIR})
 
 
 if(${MSVC}) 
@@ -46,9 +46,8 @@ message(STATUS "${PROJECT_BINARY_DIR}/data_path.h created,\n DATA_PATH=${MATH_DA
 ###############################################
 # Options and config
 ###############################################
-include(zqBasicMath/zqBasicMath.cmake)
-
-include_directories(${zqBasicMath_INCLUDE_DIRS})
+include(ResearchM/ResearchM.cmake)
+include_directories(${ResearchM_INCLUDE_DIRS})
 
 
 # ---------- CUDA ----------
