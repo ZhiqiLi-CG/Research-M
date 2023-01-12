@@ -15,6 +15,11 @@
 #include <iostream>
 #include <math.h>
 #include <zqBasicMath/math_type_promote.h>
+#include<ResearchM_config.h>
+#ifdef  RESEARCHM_ENABLE_CUDA
+#include <zqBasicUtils/utils_cuda.h>
+#include <zqBasicUtils/utils_array.h>
+#endif //  RESEARCHM_ENABLE_CUDA
 
 namespace zq{
 

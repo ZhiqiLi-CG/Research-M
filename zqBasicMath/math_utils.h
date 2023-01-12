@@ -50,8 +50,8 @@ namespace zq{
 		else if constexpr (std::is_same < T, unsigned long long>::value) return (T)1;
 		else if constexpr (std::is_same < T, float>::value) return (T)1;
 		else if constexpr (std::is_same < T, double>::value) return (T)1;
-		else if constexpr (std::is_same(T, long double)::value) return (T)1;
-		else if constexpr (std::is_same(T, bool)::value) return (T)True;
+		else if constexpr (std::is_same<T, long double>::value) return (T)1;
+		else if constexpr (std::is_same<T, bool>::value) return (T)True;
 		else {
 			return T::One();
 		}

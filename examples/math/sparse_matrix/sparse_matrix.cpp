@@ -13,6 +13,7 @@
 #include<zqBasicMath/math_sparse_vector.h>
 
 int main() {
+	
 	std::vector<zq::SparseMatrixBase<int>*> matrix_ptr{
 		new zq::SparseMatrixCoo<int>(3, 4),
 		new zq::SparseMatrixCooSym<int>(3),

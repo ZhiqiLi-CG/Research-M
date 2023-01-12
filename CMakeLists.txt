@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.2)
 
 message("This CMakeList.txt is written for 64bit system only")
 
-project (ResearchMExamples LANGUAGES CXX)
+project (ResearchMExamples LANGUAGES CXX CUDA)
 set(ResearchM_ROOT_DIR ${CMAKE_SOURCE_DIR})
 
 
@@ -48,20 +48,6 @@ message(STATUS "${PROJECT_BINARY_DIR}/data_path.h created,\n DATA_PATH=${MATH_DA
 ###############################################
 include(ResearchM/ResearchM.cmake)
 include_directories(${ResearchM_INCLUDE_DIRS})
-
-
-# ---------- CUDA ----------
-if(yzLib_ENABLE_CUDA)
-	find_package(CUDA  REQUIRED)
-
-	if(CUDA_FOUND)
-		message(STATUS "CUDA version: ${CUDA_VERSION}")
-		include_directories(${CUDA_INCLUDE_DIRS})  
-		link_directories(${CUDA_TOOLKIT_ROOT_DIR}/lib/x64)
-	else()
-		message(ERROR "CUDA not found, you need to install CUDA, or disable yzLib_ENABLE_CUDA")
-	endif()
-endif()
 
 ###############################################
 # Example Projects
