@@ -10,12 +10,18 @@ ResearchM_Deps(${project_name})
 # Add the project 
 ###############################################
 project(${project_name} LANGUAGES CXX CUDA)
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
-file(GLOB  SOURCES
-	"./*.h"
-	"./*.cpp"
-	"./*.cu"
-)
+if(CUDA_ENABLE)
+	file(GLOB  SOURCES
+		"./*.h"
+		"./*.cpp"
+		"./*.cu"
+	)
+else()
+	file(GLOB  SOURCES
+		"./*.h"
+		"./*.cpp"
+	)
+endif()
 add_executable(${project_name} ${SOURCES})
 ###############################################
 # Add this project to corresponding folder

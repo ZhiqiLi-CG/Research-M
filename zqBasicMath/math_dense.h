@@ -15,6 +15,10 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#ifdef  RESEARCHM_ENABLE_CUDA
+#include <zqBasicUtils/utils_cuda.h>
+#include <zqBasicUtils/utils_array.h>
+#endif //  RESEARCHM_ENABLE_CUDA
 #include<zqBasicMath/math_type_promote.h>
 #include<zqBasicMath/math_const.h>
 

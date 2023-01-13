@@ -40,9 +40,25 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Com2(const T x_val = 0, const T y_val = 0) :x(x_val), y(y_val) {}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Com2(const T *val_ptr) :x(*val_ptr), y(*(val_ptr + 1)) {}
-	template<typename TYPE> Com2(const Com2<TYPE> c):x(c.x), y(c.y) {}
+
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif	
+	Com2(const Com2<TYPE> c):x(c.x), y(c.y) {}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator[] (const int id){
 		assert(id==0 || id==1);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -51,6 +67,9 @@ public:
 			return y;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator[] (const int id) const{
 		assert(id==0 || id==1);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -59,26 +78,44 @@ public:
 			return y;
 	}
 
-	inline bool operator == (const Com2<T> vec) const{
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline bool operator == (const Com2<T> vec) const {
 		return vec.x == x && vec.y == y;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator != (const Com2<T> vec) const {
 		return vec.x != x || vec.y != y;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator > (const Com2<T> vec) const {
 		return x > vec.x ? true : (x == vec.x ? y > vec.y : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator < (const Com2<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? y < vec.y : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator >= (const Com2<T> vec) const {
 		return x > vec.x ? true : (x == vec.x ? y >= vec.y : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator <= (const Com2<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? y <= vec.y : false);
 	}
@@ -98,10 +135,31 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Com3(const T x_val = 0, const T y_val = 0, const T z_val = 0) :x(x_val), y(y_val), z(z_val) {}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Com3(const T *val_ptr) :x(*val_ptr), y(*(val_ptr + 1)), z(*(val_ptr + 2)) {}
-	template<typename TYPE> Com3(const Com3<TYPE> c) : x(c.x), y(c.y), z(c.z) {}
-	template<typename TYPE> Com3(const Com2<TYPE> c, const T z_val = 0) : x(c.x), y(c.y), z(z_val) {}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Com3(const Com3<TYPE> c) : x(c.x), y(c.y), z(c.z) {}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Com3(const Com2<TYPE> c, const T z_val = 0) : x(c.x), y(c.y), z(z_val) {}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator[] (const int id){
 		assert(id==0 || id==1 || id==2);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -112,6 +170,9 @@ public:
 			return z;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator[] (const int id) const{
 		assert(id==0 || id==1 || id==2);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -122,26 +183,44 @@ public:
 			return z;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator == (const Com3<T> vec) const{
 		return vec.x == x && vec.y == y && vec.z == z;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator != (const Com3<T> vec) const {
 		return  vec.x != x || vec.y != y || vec.z != z;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator > (const Com3<T> vec) const {
 		return x > vec.x ? true : (x == vec.x ? Com2<T>(y, z) > Com2<T>(vec.y, vec.z) : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator < (const Com3<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? Com2<T>(y, z) < Com2<T>(vec.y, vec.z) : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator >= (const Com3<T> vec) const {
 		return x > vec.x ? true : (x == vec.x ? Com2<T>(y, z) >= Com2<T>(vec.y, vec.z) : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator <= (const Com3<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? Com2<T>(y, z) <= Com2<T>(vec.y, vec.z) : false);
 	}
@@ -161,10 +240,31 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Com4(const T x_val = 0, const T y_val = 0, const T z_val = 0, const T w_val = 0) :x(x_val), y(y_val), z(z_val), w(w_val) {}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Com4(const T *val_ptr) :x(*val_ptr), y(*(val_ptr + 1)), z(*(val_ptr + 2)), w(*(val_ptr + 3)) {}
-	template<typename TYPE> Com4(const Com4<TYPE> c) : x(c.x), y(c.y), z(c.z), w(c.w) {}
-	template<typename TYPE> Com4(const Com3<TYPE> c, const T w_val = 0) : x(c.x), y(c.y), z(c.z), w(w_val) {}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Com4(const Com4<TYPE> c) : x(c.x), y(c.y), z(c.z), w(c.w) {}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Com4(const Com3<TYPE> c, const T w_val = 0) : x(c.x), y(c.y), z(c.z), w(w_val) {}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator[] (const int id){
 		assert(id==0 || id==1 || id==2 || id==3);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -177,6 +277,9 @@ public:
 			return w;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator[] (const int id) const{
 		assert(id==0 || id==1 || id==2 || id==3);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -189,26 +292,44 @@ public:
 			return w;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator == (const Com4<T> vec) const{
 		return vec.x == x && vec.y == y && vec.z == z && vec.w == w;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator != (const Com4<T> vec) const {
 		return  vec.x != x || vec.y != y || vec.z != z || vec.w != w;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator > (const Com4<T> vec) const {
 		return x > vec.x ? true : (x == vec.x ? Com3<T>(y, z, w) > Com3<T>(vec.y, vec.z, vec.w) : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator < (const Com4<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? Com3<T>(y, z, w) < Com3<T>(vec.y, vec.z, vec.w) : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator >= (const Com4<T> vec) const {
 		return x > vec.x ? true : (x == vec.x ? Com3<T>(y, z, w) >= Com3<T>(vec.y, vec.z, vec.w) : false);
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline bool operator <= (const Com4<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? Com3<T>(y, z, w) <= Com3<T>(vec.y, vec.z, vec.w) : false);
 	}
@@ -258,65 +379,116 @@ public:
 	using typename Com2<T>::ZQ_REAL;
 	
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Vec2(const T x_val=0, const T y_val=0):Com2<T>(x_val, y_val){}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Vec2(const T *val_ptr):Com2<T>(val_ptr){}
-	template<typename TYPE> Vec2(const Com2<TYPE> v):Com2<T>(v){}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif	
+	Vec2(const Com2<TYPE> v):Com2<T>(v){}
 
 	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec2 operator - () const{
 		Vec2 result(-x, -y);
 		return result;
 	}
 
-	template<typename TYPE> inline Vec2& operator = (const Vec2<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2& operator = (const Vec2<TYPE> vec){
 		x = vec.x;
 		y = vec.y;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec2& operator += (const Vec2<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2& operator += (const Vec2<TYPE> vec){
 		x += vec.x;
 		y += vec.y;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec2& operator -= (const Vec2<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2& operator -= (const Vec2<TYPE> vec){
 		x -= vec.x;
 		y -= vec.y;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec2& operator *= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2& operator *= (const TYPE val){
 		x *= val;
 		y *= val;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec2& operator /= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2& operator /= (const TYPE val){
 		x /= val;
 		y /= val;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec2<TYPE_PROMOTE(T, TYPE)> operator + (const Vec2<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2<TYPE_PROMOTE(T, TYPE)> operator + (const Vec2<TYPE> vec) const{
 		Vec2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += vec;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec2<TYPE_PROMOTE(T, TYPE)> operator - (const Vec2<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2<TYPE_PROMOTE(T, TYPE)> operator - (const Vec2<TYPE> vec) const{
 		Vec2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= vec;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
 		Vec2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec2<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
 		Vec2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= val;
 		return result;
@@ -325,6 +497,9 @@ public:
 	/**
 		Return normalized vector, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec2<ZQ_REAL> Normalize() const{
 		Vec2<ZQ_REAL> result(*this);
 		result.SetNormalize();
@@ -334,6 +509,9 @@ public:
 	/**
 		Return rotated vector angle_rad(rad) counter-clockwise to original vector, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec2<ZQ_REAL> RotateRad(const ZQ_REAL angle_rad) const{
 		Vec2<ZQ_REAL> result(*this);
 		result.SetRotateRad(angle_rad);
@@ -343,6 +521,9 @@ public:
 	/**
 		Return rotated vector angle_deg(degrees) counter-clockwise to original vector, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec2<ZQ_REAL> RotateDeg(const ZQ_REAL angle_deg) const{
 		Vec2<ZQ_REAL> result(*this);
 		result.SetRotateDeg(angle_deg);
@@ -353,6 +534,9 @@ public:
 	/**
 		Normalize the vector
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec2& SetNormalize(){
 		ZQ_REAL length = Length();
 		(*this) /= length;
@@ -362,6 +546,9 @@ public:
 	/**
 		Rotate the vector angle_rad(rad) counter-clockwise
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec2& SetRotateRad(const ZQ_REAL angle_rad){
 		ZQ_REAL cos_a = cos(angle_rad);
 		ZQ_REAL sin_a = sin(angle_rad);
@@ -375,15 +562,24 @@ public:
 	/**
 		Rotate the vector angle_deg(degrees) counter-clockwise
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec2& SetRotateDeg(const ZQ_REAL angle_deg){
 		return SetRotateRad( angle_deg*ZQ_PI/180 );
 	}
 
 	//	vector properties
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL SquareLength() const{
 		return x*x + y*y;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL Length() const{
 		return sqrt(SquareLength());
 	}
@@ -404,73 +600,133 @@ public:
 	using typename Com3<T>::ZQ_REAL;
 
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Vec3(const T x_val=0, const T y_val=0, const T z_val=0):Com3<T>(x_val, y_val, z_val){}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Vec3(const T *val_ptr):Com3<T>(val_ptr){}
 
-	template<typename TYPE> Vec3(const Com4<TYPE> v):Com3<T>(v.x, v.y, v.z){}
-	template<typename TYPE> Vec3(const Com3<TYPE> v):Com3<T>(v){}
-	template<typename TYPE> Vec3(const Com2<TYPE> v, const T z_val=0):Com3<T>(v, z_val){}
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Vec3(const Com4<TYPE> v):Com3<T>(v.x, v.y, v.z){}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Vec3(const Com3<TYPE> v):Com3<T>(v){}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Vec3(const Com2<TYPE> v, const T z_val=0):Com3<T>(v, z_val){}
 
 	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3 operator - () const{
 		Vec3 result(-x, -y, -z);
 		return result;
 	}
 
-	template<typename TYPE> inline Vec3& operator = (const Vec3<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3& operator = (const Vec3<TYPE> vec){
 		x = vec.x;
 		y = vec.y;
 		z = vec.z;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec3& operator += (const Vec3<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3& operator += (const Vec3<TYPE> vec){
 		x += vec.x;
 		y += vec.y;
 		z += vec.z;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec3& operator -= (const Vec3<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3& operator -= (const Vec3<TYPE> vec){
 		x -= vec.x;
 		y -= vec.y;
 		z -= vec.z;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec3& operator *= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3& operator *= (const TYPE val){
 		x *= val;
 		y *= val;
 		z *= val;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec3& operator /= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3& operator /= (const TYPE val){
 		x /= val;
 		y /= val;
 		z /= val;
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> operator + (const Vec3<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> operator + (const Vec3<TYPE> vec) const{
 		Vec3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += vec;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> operator - (const Vec3<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> operator - (const Vec3<TYPE> vec) const{
 		Vec3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= vec;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
 		Vec3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
 		Vec3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= val;
 		return result;
@@ -479,6 +735,9 @@ public:
 	/**
 		Return normalized vector, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3<ZQ_REAL> Normalize() const{
 		Vec3<ZQ_REAL> result(*this);
 		result.SetNormalize();
@@ -489,6 +748,9 @@ public:
 		Return rotated vector angle_rad(rad) around axis
 		counter-clockwise to original vector, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3<ZQ_REAL> RotateRad(const Vec3<ZQ_REAL> axis, const ZQ_REAL angle_rad) const{
 		Vec3<ZQ_REAL> result(*this);
 		result.SetRotateRad(axis, angle_rad);
@@ -499,6 +761,9 @@ public:
 		Return rotated vector angle_deg(degrees) around axis
 		counter-clockwise to original vector, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3<ZQ_REAL> RotateDeg(const Vec3<ZQ_REAL> axis, const ZQ_REAL angle_deg) const{
 		Vec3<ZQ_REAL> result(*this);
 		result.SetRotateDeg(axis, angle_deg);
@@ -510,6 +775,9 @@ public:
 
 		p' = q * p * q'
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3<ZQ_REAL> RotateQuaternion(const ZQ_REAL qw, const ZQ_REAL qx, const ZQ_REAL qy, const ZQ_REAL qz){
 		Vec3<ZQ_REAL> result(*this);
 		result.SetRotateQuaternion(qw, qx, qy, qz);
@@ -519,6 +787,9 @@ public:
 	/**
 		Normalize the vector
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3& SetNormalize(){
 		ZQ_REAL length = Length();
 		(*this) /= length;
@@ -528,6 +799,9 @@ public:
 	/**
 		Return rotated vector angle_rad(rad) around axis counter-clockwise to original vector
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3& SetRotateRad(Vec3<ZQ_REAL> axis, const ZQ_REAL angle_rad){
 		axis.SetNormalize();
 
@@ -558,6 +832,9 @@ public:
 	/**
 		Return rotated vector angle_deg(degrees) around axis counter-clockwise to original vector
 	*/	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3& SetRotateDeg(const Vec3<ZQ_REAL> axis, const ZQ_REAL angle_deg){
 		return SetRotateRad(axis, angle_deg*ZQ_PI/180);
 	}
@@ -567,6 +844,9 @@ public:
 
 		p' = q * p * q'
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3& SetRotateQuaternion(const ZQ_REAL qw, const ZQ_REAL qx, const ZQ_REAL qy, const ZQ_REAL qz){
 		ZQ_REAL new_w = -qx*x - qy*y - qz*z;
 		ZQ_REAL new_x = qw*x + qy*z - qz*y;
@@ -580,10 +860,16 @@ public:
 		return *this;
 	}
 	//	vector properties
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL SquareLength() const{
 		return x*x + y*y + z*z;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL Length() const{
 		return sqrt(SquareLength());
 	}
@@ -605,18 +891,42 @@ public:
 	using typename Com4<T>::ZQ_REAL;
 
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Vec4(const T x_val=0, const T y_val=0, const T z_val=0, const T w_val=0):Com4<T>(x_val, y_val, z_val, w_val){}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Vec4(const T *val_ptr):Com4<T>(val_ptr){}
-	template<typename TYPE> Vec4(const Com4<TYPE> v):Com4<TYPE>(v){}
-	template<typename TYPE> Vec4(const Com3<TYPE> v, const T w_val = 0)  { this->x = v.x, this->y = v.y, this->z = v.z, this->w = w_val;}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Vec4(const Com4<TYPE> v):Com4<TYPE>(v){}
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Vec4(const Com3<TYPE> v, const T w_val = 0)  { this->x = v.x, this->y = v.y, this->z = v.z, this->w = w_val;}
 
 	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec4 operator - () const{
 		Vec4 result(-x, -y, -z, -w);
 		return result;
 	}
 
-	template<typename TYPE> inline Vec4& operator = (const Vec4<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4& operator = (const Vec4<TYPE> vec){
 		x = vec.x;
 		y = vec.y;
 		z = vec.z;
@@ -624,7 +934,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec4& operator += (const Vec4<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4& operator += (const Vec4<TYPE> vec){
 		x += vec.x;
 		y += vec.y;
 		z += vec.z;
@@ -632,7 +946,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec4& operator -= (const Vec4<TYPE> vec){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4& operator -= (const Vec4<TYPE> vec){
 		x -= vec.x;
 		y -= vec.y;
 		z -= vec.z;
@@ -640,7 +958,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec4& operator *= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4& operator *= (const TYPE val){
 		x *= val;
 		y *= val;
 		z *= val;
@@ -648,7 +970,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec4& operator /= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4& operator /= (const TYPE val){
 		x /= val;
 		y /= val;
 		z /= val;
@@ -656,25 +982,41 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Vec4<TYPE_PROMOTE(T, TYPE)> operator + (const Vec4<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4<TYPE_PROMOTE(T, TYPE)> operator + (const Vec4<TYPE> vec) const{
 		Vec4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += vec;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec4<TYPE_PROMOTE(T, TYPE)> operator - (const Vec4<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4<TYPE_PROMOTE(T, TYPE)> operator - (const Vec4<TYPE> vec) const{
 		Vec4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= vec;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec4<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
 		Vec4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec4<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
 		Vec4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= val;
 		return result;
@@ -683,6 +1025,9 @@ public:
 	/**
 		Return normalized vector, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec4<ZQ_REAL> Normalize() const{
 		Vec4<ZQ_REAL> result(*this);
 		result.SetNormalize();
@@ -694,6 +1039,9 @@ public:
 	/**
 		Normalize the vector
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec4& SetNormalize(){
 		ZQ_REAL length = Length();
 		(*this) /= length;
@@ -702,10 +1050,16 @@ public:
 
 
 	//	vector properties
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL SquareLength() const{
 		return x*x + y*y + z*z + w*w;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL Length() const{
 		return sqrt(SquareLength());
 	}
@@ -717,43 +1071,75 @@ public:
 /**	@name Non-menber Vector Functions
 */
 //	========================================
-template<typename TYPE, class T> inline Vec2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Vec2<T> vec){
+template<typename TYPE, class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Vec2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Vec2<T> vec){
 	Vec2<TYPE_PROMOTE(T, TYPE)> result(vec);
 	result *= val;
 	return result;
 }
 
-template<typename TYPE, class T> inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Vec3<T> vec){
+template<typename TYPE, class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Vec3<T> vec){
 	Vec3<TYPE_PROMOTE(T, TYPE)> result(vec);
 	result *= val;
 	return result;
 }
 
-template<typename TYPE, class T> inline Vec4<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Vec4<T> vec){
+template<typename TYPE, class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Vec4<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Vec4<T> vec){
 	Vec4<TYPE_PROMOTE(T, TYPE)> result(vec);
 	result *= val;
 	return result;
 }
 
-template<class T1, class T2> inline PROMOTE_T1_T2 dot(const Vec2<T1> a, const Vec2<T2> b){
+template<class T1, class T2> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline PROMOTE_T1_T2 dot(const Vec2<T1> a, const Vec2<T2> b){
 	return a.x * b.x + a.y * b.y;
 }
 
-template<class T1, class T2> inline PROMOTE_T1_T2 dot(const Vec3<T1> a, const Vec3<T2> b){
+template<class T1, class T2> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline PROMOTE_T1_T2 dot(const Vec3<T1> a, const Vec3<T2> b){
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-template<class T1, class T2> inline PROMOTE_T1_T2 dot(const Vec4<T1> a, const Vec4<T2> b){
+template<class T1, class T2> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline PROMOTE_T1_T2 dot(const Vec4<T1> a, const Vec4<T2> b){
 	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 }
 
 
 
-template<class T> inline PROMOTE_T_TO_FLOAT cross(const Vec2<T> a, const Vec2<T> b){
+template<class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline PROMOTE_T_TO_FLOAT cross(const Vec2<T> a, const Vec2<T> b){
 	return a.x * b.y - a.y * b.x;
 }
 
-template<class T1, class T2> inline Vec3<TYPE_PROMOTE(T1, T2)> cross(const Vec3<T1> a, const Vec3<T2> b){
+template<class T1, class T2> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Vec3<TYPE_PROMOTE(T1, T2)> cross(const Vec3<T1> a, const Vec3<T2> b){
 	Vec3<TYPE_PROMOTE(T1, T2)> result;
 	result.x = a.y * b.z - a.z * b.y;
 	result.y = a.z * b.x - a.x * b.z;
@@ -857,6 +1243,11 @@ typedef Vec4<unsigned long long>	Vec4ull;
 typedef Vec4<float>					Vec4f;
 typedef Vec4<double>				Vec4d;
 typedef Vec4<long double>			Vec4ld;
+
+template<class T,int d=2>
+using Vec = typename std::conditional<d == 2, Vec2<T>,
+	typename std::conditional<d == 3, Vec3<T>, Vec4<T> >::type
+>::type;
 
 }	//	end namespace ZQ
 

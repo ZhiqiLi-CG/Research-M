@@ -1,0 +1,10 @@
+# CMake generation dependency list for this directory.
+D:/Research Library/Research-P/Research-M/ResearchM/ResearchM.cmake
+D:/Research Library/Research-P/Research-M/ResearchM/ResearchM_config.h.in
+D:/Research Library/Research-P/Research-M/examples/math/cuda_math_array/CMakeLists.txt
+D:/Research Library/Research-P/Research-M/zqBasicMath/zqBasicMath.cmake
+D:/Research Library/Research-P/Research-M/zqBasicUtils/zqBasicUtils.cmake
+D:/cmake/share/cmake-3.21/Modules/FindCUDA.cmake
+D:/cmake/share/cmake-3.21/Modules/FindCUDA/select_compute_arch.cmake
+D:/cmake/share/cmake-3.21/Modules/FindPackageHandleStandardArgs.cmake
+D:/cmake/share/cmake-3.21/Modules/FindPackageMessage.cmake

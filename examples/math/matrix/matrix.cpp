@@ -10,7 +10,7 @@
 #include <iostream>
 #include<zqBasicMath/math_vector.h>
 #include<zqBasicMath/math_matrix.h>
-#include<zqBasicMath/math_matrix_utils.h>
+#include<zqBasicMath/math_utils.h>
 
 int main() {
 	{

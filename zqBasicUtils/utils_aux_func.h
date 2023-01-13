@@ -12,19 +12,32 @@
 #include <iostream>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
-
+#ifdef _DEBUG
+	#pragma comment(lib,"fmtd.lib")
+#else
+	#pragma comment(lib,fmt.lib)
+#endif
 namespace zq {
+	// Assert
 	void Crash_With_Info(const std::string& s, int ret)
 	{
 		std::cerr << s << "\n";
 		exit(ret);
 	}
-
 	void Assert(bool flag, const std::string& s, int ret)
 	{
 		if (!flag) Crash_With_Info(s, ret);
 	}
 
+	template <typename... Args>
+	void Assert(const bool flg, const char* fmt = "", const Args &...args) {
+		if (!flg) {
+			std::cerr << "[Error]" << fmt::format(fmt, args...);
+			exit(-1);
+		}
+	}
+
+	// Is valid number
 	template<class T> bool Is_Valid_Number(const T& a);
 	template<> 
 	bool Is_Valid_Number(const float& a) {
@@ -39,13 +52,14 @@ namespace zq {
 		return (!std::isnan(a)) && std::isfinite(a);
 	}
 
+
+	/// Info
 	template<typename ...Args>
 	void Info(const char* fmt, const Args&...args) {
 		std::cout << "#     ";
 		fmt::print(fmt, args...);
 		std::cout << "\n";
 	}
-
 	void Info(const std::string& str)
 	{
 		Info(str.c_str());

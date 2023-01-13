@@ -34,23 +34,47 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Quaternion(const T w_val=1, const T x_val=0, const T y_val=0, const T z_val=0): w(w_val), x(x_val), y(y_val), z(z_val){}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Quaternion(const T *val_ptr) : w(val_ptr[0]), x(val_ptr[1]), y(val_ptr[2]), z(val_ptr[3]){}
-	template<typename TYPE> Quaternion(const Quaternion<TYPE> rhs){
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Quaternion(const Quaternion<TYPE> rhs){
 		w = rhs.w;
 		x = rhs.x;
 		y = rhs.y;
 		z = rhs.z;
 	}
-	template<typename TYPE> Quaternion(const Com4<TYPE> vec4)
+
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Quaternion(const Com4<TYPE> vec4)
 		: w(vec4.x), x(vec4.y), y(vec4.z), z(vec4.w){
 	}
 
-	template<typename TYPE> Quaternion(const Matrix3x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Quaternion(const Matrix3x3<TYPE> mat){
 		this->Set(mat);
 	}
 
 	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator[] (const int id){
 		assert(id==0 || id==1 || id==2 || id==3);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -63,6 +87,9 @@ public:
 			return z;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator[] (const int id) const{
 		assert(id==0 || id==1 || id==2 || id==3);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -75,12 +102,19 @@ public:
 			return z;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion operator - () const{
 		Quaternion result(-x, -y, -z, -w);
 		return result;
 	}
 
-	template<typename TYPE> inline Quaternion& operator = (const Quaternion<TYPE> rhs){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion& operator = (const Quaternion<TYPE> rhs){
 		w = rhs.w;
 		x = rhs.x;
 		y = rhs.y;
@@ -88,7 +122,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Quaternion& operator = (const Com4<TYPE> rhs){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion& operator = (const Com4<TYPE> rhs){
 		//	be cautious about the sequence
 		w = rhs.x;
 		x = rhs.y;
@@ -97,7 +135,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Quaternion& operator += (const Quaternion<TYPE> rhs){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion& operator += (const Quaternion<TYPE> rhs){
 		w += rhs.w;
 		x += rhs.x;
 		y += rhs.y;
@@ -105,7 +147,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Quaternion& operator -= (const Quaternion<TYPE> rhs){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion& operator -= (const Quaternion<TYPE> rhs){
 		w -= rhs.w;
 		x -= rhs.x;
 		y -= rhs.y;
@@ -113,7 +159,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Quaternion& operator *= (const Quaternion<TYPE> rhs){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion& operator *= (const Quaternion<TYPE> rhs){
 		T new_w = w*rhs.w - x*rhs.x - y*rhs.y - z*rhs.z;
 		T new_x = w*rhs.x + x*rhs.w + y*rhs.z - z*rhs.y;
 		T new_y = w*rhs.y - x*rhs.z + y*rhs.w + z*rhs.x;
@@ -125,7 +175,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Quaternion& operator *= (const TYPE scale){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion& operator *= (const TYPE scale){
 		w *= scale;
 		x *= scale;
 		y *= scale;
@@ -133,7 +187,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Quaternion& operator /= (const TYPE scale){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion& operator /= (const TYPE scale){
 		w /= scale;
 		x /= scale;
 		y /= scale;
@@ -141,28 +199,51 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator + (const Quaternion<TYPE> rhs) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator + (const Quaternion<TYPE> rhs) const{
 		Quaternion<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += rhs;
 		return result;
 	}
-	template<typename TYPE> inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator - (const Quaternion<TYPE> rhs) const{
+
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator - (const Quaternion<TYPE> rhs) const{
 		Quaternion<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= rhs;
 		return result;
 	}
-	template<typename TYPE> inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator * (const Quaternion<TYPE> rhs) const{
+
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator * (const Quaternion<TYPE> rhs) const{
 		Quaternion<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= rhs;
 		return result;
 	}
 
-	template<typename TYPE> inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE scale) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE scale) const{
 		Quaternion<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= scale;
 		return result;
 	}
-	template<typename TYPE> inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE scale) const{
+
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Quaternion<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE scale) const{
 		Quaternion<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= scale;
 		return result;
@@ -172,6 +253,9 @@ public:
 
 		negative and original quaternion represent the same rotation
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion Negative() const{
 		Quaternion neg(-w, -x, -y, -z);
 		return neg;
@@ -182,6 +266,9 @@ public:
 
 		negative and original quaternion represent the same rotation
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion& SetNegative(){
 		w = -w;
 		x = -x;
@@ -195,6 +282,9 @@ public:
 
 		conjugate quaternion represents the inverse rotation
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion Conjugate() const{
 		Quaternion conj(w, -x, -y, -z);
 		return conj;
@@ -205,6 +295,9 @@ public:
 
 		conjugate quaternion represents the inverse rotation
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion& SetConjugate(){
 		x = -x;
 		y = -y;
@@ -215,6 +308,9 @@ public:
 	/**
 		get normalized quaternion
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion<PROMOTE_T_TO_FLOAT> Normalize() const{
 		Quaternion<TYPE_PROMOTE(T, float)> result(*this);
 		result.SetNormalize();
@@ -224,6 +320,9 @@ public:
 	/**
 		Normalize the quaternion
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion& SetNormalize(){
 		TYPE_PROMOTE(T, float) inv_length = 1.0 / sqrt(w*w + x*x + y*y + z*z);
 		w *= inv_length;
@@ -236,6 +335,9 @@ public:
 	/**
 		Get the square norm of quaternion
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL SquareNorm() const{
 		return w*w + x*x + y*y + z*z;
 	}
@@ -243,6 +345,9 @@ public:
 	/**
 		Get the norm of quaternion
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL Norm() const{
 		return sqrt( SquareNorm() );
 	}
@@ -255,6 +360,9 @@ public:
 		\param	q	the target quaternion
 	*/
 	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion& SetCloser(Quaternion<TYPE> q){
 		ZQ_REAL cur_dist = (q-(*this)).SquareNorm();
 		ZQ_REAL neg_dist = (q+(*this)).SquareNorm();
@@ -274,6 +382,9 @@ public:
 		\author	Chen Cao
 	*/
 	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion& Set(const Matrix3x3<TYPE> mat){
 		//	determinant of rotation matrix must be 1
 		assert( fabs(mat.Det() -1 ) < 1e-3 );
@@ -322,6 +433,9 @@ public:
 		\param	angle_rad	rotation angle in rad
 		\return				*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion& SetRad(Vec3<ZQ_REAL> axis, TYPE_PROMOTE(T, float) angle_rad){
 		TYPE_PROMOTE(T, float) cos_half = cos(angle_rad*0.5);
 		TYPE_PROMOTE(T, float) sin_half = sin(angle_rad*0.5);
@@ -343,6 +457,9 @@ public:
 		\param	angle_deg	rotation angle in degree
 		\return				*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Quaternion& SetDeg(Vec3<ZQ_REAL> axis, TYPE_PROMOTE(T, float) angle_deg){
 		return SetRad( axis, angle_deg*ZQ_PI/180 );
 	}
@@ -350,6 +467,9 @@ public:
 	/**
 		return the rotation axis
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3<ZQ_REAL> Axis() const{
 		Vec3<ZQ_REAL> axis(x, y, z);
 		return axis.Normalize();
@@ -358,6 +478,9 @@ public:
 	/**
 		return the rotation angle in radius
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL AngleRad() const{
 		return acos(w) * 2;
 	}
@@ -365,6 +488,9 @@ public:
 	/**
 		return the rotation angle in degree
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline ZQ_REAL AngleDeg() const{
 		return AngleRad() * 180 / ZQ_REAL(ZQ_PI);
 	}
@@ -393,7 +519,11 @@ template<class T> inline std::ostream& operator << (std::ostream& stream, const 
 /**	@name Non-menber Quaternion Functions
 */
 //	========================================
-template<class T1, class T2> inline PROMOTE_T1_T2 dot(const Quaternion<T1> a, const Quaternion<T2> b){
+template<class T1, class T2> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline PROMOTE_T1_T2 dot(const Quaternion<T1> a, const Quaternion<T2> b){
 	return a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
@@ -414,6 +544,9 @@ template<class T1, class T2> inline PROMOTE_T1_T2 dot(const Quaternion<T1> a, co
 	\return			interplated quaternion (normalized)
 */
 template <typename T1, typename T2>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
 inline Quaternion<PROMOTE_T1_T2_TO_FLOAT> interpLerp(const Quaternion<T1> q0, const Quaternion<T2> q1, double t){
 	Quaternion<PROMOTE_T1_T2_TO_FLOAT> q = q0 * (1.0 - t) + q1 * t;
 	return q;
@@ -431,6 +564,9 @@ inline Quaternion<PROMOTE_T1_T2_TO_FLOAT> interpLerp(const Quaternion<T1> q0, co
 	\return			interplated quaternion (normalized)
 */
 template <typename T1, typename T2>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
 inline Quaternion<PROMOTE_T1_T2_TO_FLOAT> interpSlerp(const Quaternion<T1> qa, const Quaternion<T2> qb, double t){
 	Quaternion<PROMOTE_T1_T2_TO_FLOAT> qm;
 	// Calculate angle between them.
@@ -483,6 +619,9 @@ inline Quaternion<PROMOTE_T1_T2_TO_FLOAT> interpSlerp(const Quaternion<T1> qa, c
 	\param	src_size		source value array size, minimal value: 2, or the program will cause error
 */
 template<typename T1, typename T2>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
 inline void resampleLerp(Quaternion<T1>* des, int des_size, const Quaternion<T2>* src, int src_size){
 	assert(src_size>1 && des_size>0);
 
@@ -506,6 +645,9 @@ inline void resampleLerp(Quaternion<T1>* des, int des_size, const Quaternion<T2>
 	\param	src_size		source value array size, minimal value: 2, or the program will cause error
 */
 template<typename T1, typename T2>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
 inline void resampleSlerp(Quaternion<T1>* des, int des_size, const Quaternion<T2>* src, int src_size){
 	assert(src_size>1 && des_size>0);
 

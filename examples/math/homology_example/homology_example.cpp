@@ -18,7 +18,7 @@ bool compare_read_write(
 	const zq::DenseVector<zq::Vec3f>& points
 ) {
 	zq::DenseVector<zq::Vec3f> test_points;
-	zq::readDenseVectorPointsFromFile(file_name.c_str(), test_points);
+	zq::utils::readDenseVectorPointsFromFile(file_name.c_str(), test_points);
 	if (points.Dim() != test_points.Dim()) return false;
 	else {
 		for (int i = 0; i < points.Dim(); i++) {
@@ -43,7 +43,7 @@ int main() {
 					(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(2 * ZQ_PI * i / reso),
 					0));
 		}
-		zq::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_one_cycle.dat")).c_str(), points);
+		zq::utils::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_one_cycle.dat")).c_str(), points);
 		if (1) {
 			if (compare_read_write((std::string(data_path) + std::string("/persistent_homology_one_cycle.dat")).c_str(), points)) printf("\ninput and output match\n");
 			else printf("input and output mismatch\n");
@@ -59,7 +59,7 @@ int main() {
 					(r + zq::randFloatingPointNumber(-ran / 2, ran / 2)) * sin(2 * ZQ_PI * i / reso),
 					0));
 		}
-		zq::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_one_cycle_random.dat")).c_str(), points);
+		zq::utils::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_one_cycle_random.dat")).c_str(), points);
 		if (1) {
 			if (compare_read_write((std::string(data_path) + std::string("/persistent_homology_one_cycle_random.dat")).c_str(), points)) printf("input and output match\n");
 			else printf("input and output mismatch\n");
@@ -82,7 +82,7 @@ int main() {
 					0,
 					(r + zq::randFloatingPointNumber(0.0f, ran)) * sin(2 * ZQ_PI * i / reso)));
 		}
-		zq::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_two_cycle_random.dat")).c_str(), points);
+		zq::utils::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_two_cycle_random.dat")).c_str(), points);
 		if (1) {
 			if (compare_read_write((std::string(data_path) + std::string("/persistent_homology_two_cycle_random.dat")).c_str(), points)) printf("input and output match\n");
 			else printf("input and output mismatch\n");
@@ -102,7 +102,7 @@ int main() {
 					));
 			}
 		}
-		zq::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_one_sphere_random.dat")).c_str(), points);
+		zq::utils::writeDenseVectorPointsToFile((std::string(data_path) + std::string("/persistent_homology_one_sphere_random.dat")).c_str(), points);
 		if (1) {
 			if (compare_read_write((std::string(data_path) + std::string("/persistent_homology_one_sphere_random.dat")).c_str(), points)) printf("input and output match\n");
 			else printf("input and output mismatch\n");

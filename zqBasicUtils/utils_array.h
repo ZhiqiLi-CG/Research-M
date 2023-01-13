@@ -19,6 +19,8 @@
 	#include "cublas_v2.h"
 	#include <thrust/device_vector.h>
 	#include <thrust/host_vector.h>
+	#include <thrust/copy.h>
+	#include <thrust/fill.h>
 	#include <vector_functions.h>
 	#include "driver_types.h"
 	#include <thrust/iterator/zip_iterator.h>
@@ -29,14 +31,17 @@
 	#include <thrust/functional.h>
 	#include <thrust/inner_product.h>
 	#include <thrust/extrema.h>
+#else
+	#include<vector>
 #endif
+
 namespace zq {
 		#define HOST 0
 		#define DEVICE 1
 #ifdef RESEARCHM_ENABLE_CUDA
 		template<class T, int side = 0>
 		using Array = typename std::conditional<side == 0, thrust::host_vector<T>, thrust::device_vector<T>>::type;
-#elif		
+#else		
 		template<class T, int side = 0> using Array = std::vector<T>;
 #endif
 		template<class T, int side = 0> 

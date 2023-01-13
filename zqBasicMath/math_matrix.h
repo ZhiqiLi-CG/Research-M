@@ -16,7 +16,7 @@
 #include <iostream>
 #include <math.h>
 #include <zqBasicMath/math_vector.h>
-#include <zqBasicMath/math_numerical_utils.h>
+#include <zqBasicMath/math_utils.h>
 #include <zqBasicMath/math_const.h>
 
 namespace zq{
@@ -40,24 +40,40 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix2x2(const T* val_ptr){
 		data[0][0] = val_ptr[0];
 		data[0][1] = val_ptr[1];
 		data[1][0] = val_ptr[2];
 		data[1][1] = val_ptr[3];
 	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix2x2(T val00=0, T val01=0, T val10=0, T val11=0){
 		data[0][0] = val00;
 		data[0][1] = val01;
 		data[1][0] = val10;
 		data[1][1] = val11;
 	}
-	template<typename TYPE> Matrix2x2(const Matrix2x2<TYPE> mat){
+
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix2x2(const Matrix2x2<TYPE> mat){
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
 		data[1][0] = mat.data[1][0];
 		data[1][1] = mat.data[1][1];
 	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix2x2(const Com2<T> vec1, const Com2<T> vec2){
 		data[0][0] = vec1.x;
 		data[0][1] = vec2.x;
@@ -66,6 +82,10 @@ public:
 	}
 
 	//	operators
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T* operator[] (const int id){
 		assert(id==0 || id==1);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -74,6 +94,9 @@ public:
 			return data[1];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T* operator[] (const int id) const{
 		assert(id==0 || id==1);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -82,14 +105,23 @@ public:
 			return data[1];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator()(const int x, const int y){
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator()(const int x, const int y) const{
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2 operator - () const{
 		Matrix2x2 result(*this);
 		result.data[0][0] = - data[0][0];
@@ -99,7 +131,12 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x2& operator = (const Matrix2x2<TYPE> mat){
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2& operator = (const Matrix2x2<TYPE> mat){
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
 		data[1][0] = mat.data[1][0];
@@ -107,7 +144,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x2& operator += (const Matrix2x2<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2& operator += (const Matrix2x2<TYPE> mat){
 		data[0][0] += mat.data[0][0];
 		data[0][1] += mat.data[0][1];
 		data[1][0] += mat.data[1][0];
@@ -115,7 +156,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x2& operator -= (const Matrix2x2<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2& operator -= (const Matrix2x2<TYPE> mat){
 		data[0][0] -= mat.data[0][0];
 		data[0][1] -= mat.data[0][1];
 		data[1][0] -= mat.data[1][0];
@@ -123,7 +168,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x2& operator *= (const Matrix2x2<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2& operator *= (const Matrix2x2<TYPE> mat){
 		T new_data[2][2];
 		new_data[0][0] = data[0][0]*mat.data[0][0] + data[0][1]*mat.data[1][0];
 		new_data[0][1] = data[0][0]*mat.data[0][1] + data[0][1]*mat.data[1][1];
@@ -136,7 +185,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x2& operator *= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2& operator *= (const TYPE val){
 		data[0][0] *= val;
 		data[0][1] *= val;
 		data[1][0] *= val;
@@ -144,7 +197,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x2& operator /= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2& operator /= (const TYPE val){
 		data[0][0] /= val;
 		data[0][1] /= val;
 		data[1][0] /= val;
@@ -152,25 +209,41 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix2x2<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix2x2<TYPE> mat) const{
 		Matrix2x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix2x2<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix2x2<TYPE> mat) const{
 		Matrix2x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix2x2<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix2x2<TYPE> mat) const{
 		Matrix2x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix2x3<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix2x3<TYPE> mat) const{
 		Matrix2x3<TYPE_PROMOTE(T, TYPE)> result;
 		result[0][0] = data[0][0] * mat[0][0] + data[0][1] * mat[1][0];
 		result[0][1] = data[0][0] * mat[0][1] + data[0][1] * mat[1][1];
@@ -181,19 +254,31 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
 		Matrix2x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
 		Matrix2x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec2<TYPE_PROMOTE(T, TYPE)> operator * (const Vec2<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2<TYPE_PROMOTE(T, TYPE)> operator * (const Vec2<TYPE> vec) const{
 		TYPE_PROMOTE(T, TYPE) new_x = data[0][0]*vec.x + data[0][1]*vec.y;
 		TYPE_PROMOTE(T, TYPE) new_y = data[1][0]*vec.x + data[1][1]*vec.y;
 		return Vec2<TYPE_PROMOTE(T, TYPE)>(new_x, new_y);
@@ -202,6 +287,9 @@ public:
 	/**
 		Return an 2x2 identity matrix
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2 Identity() const{
 		Matrix2x2 result(1, 0, 0, 1);
 		return result;
@@ -210,6 +298,9 @@ public:
 	/**
 		Return transposed matrix, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2 Transpose() const{
 		Matrix2x2 result(*this);
 		result.SetTranspose();
@@ -219,6 +310,9 @@ public:
 	/**
 		Return inversed matrix, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2 Inverse() const{
 		Matrix2x2 result(*this);
 		result.SetInverse();
@@ -226,17 +320,26 @@ public:
 	}
 
 	//	set matrix
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2& SetIdentity(){
 		data[0][0] = data[1][1] = 1;
 		data[0][1] = data[1][0] = 0;
 		return *this;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2& SetTranspose(){
 		mySwap(data[0][1], data[1][0]);
 		return *this;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2& SetInverse(){
 		T det = Det();
 		if( det != 0 ){
@@ -255,6 +358,9 @@ public:
 	/**
 		Set the matrix to be diagonal matrix, with given diagonal values
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2& SetAsDiagonal(T diag1, T diag2) {
 		data[0][0] = diag1;
 		data[1][1] = diag2;
@@ -265,6 +371,9 @@ public:
 	/**
 		Set the matrix to be diagonal matrix, with given diagonal values
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2& SetAsDiagonal(Com2<T> diag) {
 		return SetAsDiagonal(diag[0], diag[1]);
 	}
@@ -272,6 +381,9 @@ public:
 	/**
 		Set the matrix to be a rotation matrix, angle_rad(rad) counter-clockwise
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2& SetRotationRad(ZQ_REAL angle_rad){
 		ZQ_REAL cos_a = cos(angle_rad);
 		ZQ_REAL sin_a = sin(angle_rad);
@@ -284,11 +396,17 @@ public:
 	/**
 		Set the matrix to be a rotation matrix, angle_deg(degrees) counter-clockwise
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2& SetRotationDeg(ZQ_REAL angle_deg){
 		return SetRotationRad( angle_deg*ZQ_PI/180 );
 	}
 
 	//	matrix properties
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline void RetriveColumn(Com2<T>& vec1, Com2<T>& vec2) const {
 		vec1.x = data[0][0];
 		vec1.y = data[1][0];
@@ -296,16 +414,25 @@ public:
 		vec2.y = data[1][1];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline int IsSymmetric() const {
 		if (fabs(data[0][1] - data[1][0]) > 1e-6)
 			return 0;
 		return 1;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T Det() const{
 		return data[0][0]*data[1][1] - data[0][1]*data[1][0];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T Trace() const{
 		return data[0][0] + data[1][1];
 	}
@@ -320,6 +447,9 @@ public:
 		\return				the number of eigen values
 	*/
 	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline int Eigen(Com2<TYPE>& eigen_vec1, TYPE& eigen_val1, Com2<TYPE>& eigen_vec2, TYPE& eigen_val2) const{
 		double	tra	= Trace();
 		double	det	= Det();
@@ -392,6 +522,9 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix3x3(const T* val_ptr){
 		data[0][0] = val_ptr[0];
 		data[0][1] = val_ptr[1];
@@ -403,6 +536,10 @@ public:
 		data[2][1] = val_ptr[7];
 		data[2][2] = val_ptr[8];
 	}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix3x3(T val00=0, T val01=0, T val02=0, T val10=0, T val11=0, T val12=0, T val20=0, T val21=0, T val22=0){
 		data[0][0] = val00;
 		data[0][1] = val01;
@@ -414,7 +551,12 @@ public:
 		data[2][1] = val21;
 		data[2][2] = val22;
 	}
-	template<typename TYPE> Matrix3x3(const Matrix3x3<TYPE> mat){
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix3x3(const Matrix3x3<TYPE> mat){
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
 		data[0][2] = mat.data[0][2];
@@ -425,9 +567,18 @@ public:
 		data[2][1] = mat.data[2][1];
 		data[2][2] = mat.data[2][2];
 	}
-	template<typename TYPE> Matrix3x3(const Quaternion<TYPE> quaternion){
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix3x3(const Quaternion<TYPE> quaternion){
 		this->SetRotation(quaternion);
 	}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix3x3(const Com3<T> vec1, const Com3<T> vec2, const Com3<T> vec3){
 		data[0][0] = vec1.x;
 		data[0][1] = vec2.x;
@@ -441,6 +592,9 @@ public:
 	}
 
 	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T* operator[] (const int id){
 		assert(id==0 || id==1 || id==2);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -451,6 +605,9 @@ public:
 			return data[2];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T* operator[] (const int id) const{
 		assert(id==0 || id==1 || id==2);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -461,14 +618,23 @@ public:
 			return data[2];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator()(const int x, const int y){
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator()(const int x, const int y) const{
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3 operator - () const{
 		Matrix3x3 result(*this);
 		result.data[0][0] = - data[0][0];
@@ -483,7 +649,11 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x3& operator = (const Matrix3x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3& operator = (const Matrix3x3<TYPE> mat){
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
 		data[0][2] = mat.data[0][2];
@@ -496,11 +666,19 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x3& operator = (const Quaternion<TYPE> quaternion){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3& operator = (const Quaternion<TYPE> quaternion){
 		return SetRotation(quaternion);
 	}
 
-	template<typename TYPE> inline Matrix3x3& operator += (const Matrix3x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3& operator += (const Matrix3x3<TYPE> mat){
 		data[0][0] += mat.data[0][0];
 		data[0][1] += mat.data[0][1];
 		data[0][2] += mat.data[0][2];
@@ -513,7 +691,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x3& operator -= (const Matrix3x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3& operator -= (const Matrix3x3<TYPE> mat){
 		data[0][0] -= mat.data[0][0];
 		data[0][1] -= mat.data[0][1];
 		data[0][2] -= mat.data[0][2];
@@ -526,7 +708,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x3& operator *= (const Matrix3x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3& operator *= (const Matrix3x3<TYPE> mat){
 		T new_data[3][3];
 		new_data[0][0] = data[0][0]*mat.data[0][0] + data[0][1]*mat.data[1][0] + data[0][2]*mat.data[2][0];
 		new_data[0][1] = data[0][0]*mat.data[0][1] + data[0][1]*mat.data[1][1] + data[0][2]*mat.data[2][1];
@@ -549,7 +735,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x3& operator *= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3& operator *= (const TYPE val){
 		data[0][0] *= val;
 		data[0][1] *= val;
 		data[0][2] *= val;
@@ -562,7 +752,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x3& operator /= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3& operator /= (const TYPE val){
 		data[0][0] /= val;
 		data[0][1] /= val;
 		data[0][2] /= val;
@@ -575,25 +769,41 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix3x3<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix3x3<TYPE> mat) const{
 		Matrix3x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix3x3<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix3x3<TYPE> mat) const{
 		Matrix3x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix3x3<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix3x3<TYPE> mat) const{
 		Matrix3x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix3x2<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix3x2<TYPE> mat) const{
 		Matrix3x2<TYPE_PROMOTE(T, TYPE)> result;
 		result[0][0] = data[0][0] * mat[0][0] + data[0][1] * mat[1][0] + data[0][2] * mat[2][0];
 		result[0][1] = data[0][0] * mat[0][1] + data[0][1] * mat[1][1] + data[0][2] * mat[2][1];
@@ -604,19 +814,31 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
 		Matrix3x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
 		Matrix3x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const Vec3<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const Vec3<TYPE> vec) const{
 		TYPE_PROMOTE(T, TYPE) new_x = data[0][0]*vec.x + data[0][1]*vec.y + data[0][2]*vec.z;
 		TYPE_PROMOTE(T, TYPE) new_y = data[1][0]*vec.x + data[1][1]*vec.y + data[1][2]*vec.z;
 		TYPE_PROMOTE(T, TYPE) new_z = data[2][0]*vec.x + data[2][1]*vec.y + data[2][2]*vec.z;
@@ -626,6 +848,9 @@ public:
 	/**
 		Return an 3x3 identity matrix
 	*/	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3 Identity() const{
 		Matrix3x3 result(1, 0, 0, 0, 1, 0, 0, 0, 1);
 		return result;
@@ -634,6 +859,9 @@ public:
 	/**
 		Return transposed matrix, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3 Transpose() const{
 		Matrix3x3 result(*this);
 		result.SetTranspose();
@@ -643,6 +871,9 @@ public:
 	/**
 		Return inversed matrix, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3 Inverse() const{
 		Matrix3x3 result(*this);
 		result.SetInverse();
@@ -650,12 +881,18 @@ public:
 	}
 
 	//	set matrix
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetIdentity(){
 		data[0][0] = data[1][1] = data[2][2] = 1;
 		data[0][1] = data[0][2] = data[1][0] = data[1][2] = data[2][0] = data[2][1] = 0;
 		return *this;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetTranspose(){
 		mySwap(data[0][1], data[1][0]);
 		mySwap(data[0][2], data[2][0]);
@@ -663,6 +900,9 @@ public:
 		return *this;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetInverse(){
 		T det = Det();
 		if( det != 0 ){
@@ -701,6 +941,9 @@ public:
 	/**
 		Set the matrix to be diagonal matrix, with given diagonal values
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetAsDiagonal(T diag1, T diag2, T diag3) {
 		data[0][0] = diag1;
 		data[1][1] = diag2;
@@ -712,6 +955,9 @@ public:
 	/**
 		Set the matrix to be diagonal matrix, with given diagonal values
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetAsDiagonal(Com3<T> diag) {
 		return SetAsDiagonal(diag[0], diag[1], diag[2]);
 	}
@@ -722,6 +968,9 @@ public:
 		\author	Chen Cao
 	*/
 	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetRotation(Quaternion<TYPE> quaternion){
 		quaternion.SetNormalize();
 
@@ -766,6 +1015,9 @@ public:
 		\param	sin_angle	sin(rotation_angle) value
 		\return				*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetRotation(Com3<ZQ_REAL> axis, ZQ_REAL cos_angle, ZQ_REAL sin_angle){
 		axis = Vec3<ZQ_REAL>(axis).Normalize();
 
@@ -789,6 +1041,9 @@ public:
 		\param	angle_rad	rotation angle in rad
 		\return				*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetRotationRad(Com3<ZQ_REAL> axis, ZQ_REAL angle_rad){
 		ZQ_REAL cos_angle = cos(angle_rad);
 		ZQ_REAL sin_angle = sin(angle_rad);
@@ -803,6 +1058,9 @@ public:
 		\param	angle_deg	rotation angle in degree
 		\return				*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetRotationDeg(Com3<ZQ_REAL> axis, ZQ_REAL angle_deg){
 		return SetRotationRad( axis, angle_deg*ZQ_PI/180 );
 	}
@@ -815,6 +1073,9 @@ public:
 		\param	z		scale value in z direction
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetScale(T x, T y, T z){
 		return SetAsDiagonal(x, y, z);
 	}
@@ -825,6 +1086,9 @@ public:
 		\param	scale	scale value in all directions
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetScale(T scale){
 		return SetScale(scale, scale, scale);
 	}
@@ -835,11 +1099,17 @@ public:
 		\param	scale	scale value in xZQ directions
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3& SetScale(Com3<T> scale){
 		return SetScale(scale.x, scale.y, scale.z);
 	}
 
 	//	matrix properties
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline void RetriveColumn(Com3<T>& vec1, Com3<T>& vec2, Com3<T>& vec3) const {
 		vec1.x = data[0][0];
 		vec1.y = data[1][0];
@@ -852,6 +1122,9 @@ public:
 		vec3.z = data[2][2];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline int IsSymmetric() const {
 		if (fabs(data[0][1] - data[1][0]) > 1e-6)
 			return 0;
@@ -862,6 +1135,9 @@ public:
 		return 1;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T Det() const{
 		return		data[0][0]*data[1][1]*data[2][2]
 				-	data[0][0]*data[1][2]*data[2][1]
@@ -871,6 +1147,9 @@ public:
 				-	data[0][2]*data[1][1]*data[2][0];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T Trace() const{
 		return data[0][0] + data[1][1] + data[2][2];
 	}
@@ -884,6 +1163,9 @@ public:
 	\return		number of eigen values (should be 3. for non-symmetric matrix, return 0)
 	*/
 	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline int EigenSymm(TYPE& eigen_val1, TYPE& eigen_val2, TYPE& eigen_val3) const {
 		if (!IsSymmetric())	//	this algorithm only deal with symmetric matrix
 			return 0;
@@ -934,6 +1216,9 @@ public:
 	\return		number of eigen values (should be 3. return 0 if matrix is not symmetric)
 	*/
 	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline int EigenSymm(Matrix3x3<TYPE>& U, Vec3<TYPE>& S) const {
 		int res = EigenSymm(S[0], S[1], S[2]);
 		if (res == 0)	//	non-symmetric matrix, calculate failed
@@ -1031,20 +1316,37 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix4x4(){
 		for (int j = 0; j < 4; j++)
 			for (int i = 0; i < 4; i++)
 				data[j][i] = 0;
 	}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix4x4(const T* val_ptr){
 		for( int i=0; i<16; i++ )
 			data[0][i] = val_ptr[i];
 	}
-	template<typename TYPE> Matrix4x4(const Matrix4x4<TYPE> mat){
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix4x4(const Matrix4x4<TYPE> mat){
 		for( int i=0; i<16; i++ )
 			data[0][i] = mat.data[0][i];
 	}
-	template<typename TYPE> Matrix4x4(const Matrix3x3<TYPE> mat){
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix4x4(const Matrix3x3<TYPE> mat){
 		//	treate them as transform matrix
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
@@ -1061,10 +1363,20 @@ public:
 		data[3][0] = data[3][1] = data[3][2] = 0;
 		data[3][3] = 1;
 	}
-	template<typename TYPE> Matrix4x4(const Quaternion<TYPE> quaternion){
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix4x4(const Quaternion<TYPE> quaternion){
 		SetRotation(quaternion);
 	}
-	template<typename T1, typename T2> Matrix4x4(const Matrix3x3<T1> rot_mat, const Vec3<T2> trans_vec){
+	
+	template<typename T1, typename T2> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix4x4(const Matrix3x3<T1> rot_mat, const Vec3<T2> trans_vec){
 		data[0][0] = rot_mat.data[0][0];
 		data[0][1] = rot_mat.data[0][1];
 		data[0][2] = rot_mat.data[0][2];
@@ -1081,6 +1393,9 @@ public:
 		data[3][3] = 1;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix4x4(const Com4<T> vec1, const Com4<T> vec2, const Com4<T> vec3, const Com4<T> vec4){
 		data[0][0] = vec1.x;
 		data[0][1] = vec2.x;
@@ -1101,6 +1416,9 @@ public:
 	}
 
 	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T* operator[] (const int id){
 		assert(id==0 || id==1 || id==2 || id==3);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -1113,6 +1431,9 @@ public:
 			return data[3];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T* operator[] (const int id) const{
 		assert(id==0 || id==1 || id==2 || id==3);	//	id must be valid, or the last value is returned
 		if( !id )
@@ -1125,14 +1446,23 @@ public:
 			return data[3];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator()(const int x, const int y){
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator()(const int x, const int y) const{
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4 operator - () const{
 		Matrix4x4 result(*this);
 		for (int j = 0; j < 4; j++)
@@ -1141,14 +1471,22 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix4x4& operator = (const Matrix4x4<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4& operator = (const Matrix4x4<TYPE> mat){
 		for (int j = 0; j < 4; j++)
 			for (int i = 0; i < 4; i++)
 				data[j][i] = mat.data[j][i];
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix4x4& operator = (const Matrix3x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4& operator = (const Matrix3x3<TYPE> mat){
 		//	treate them as transform matrix
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
@@ -1169,25 +1507,41 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix4x4& operator = (const Quaternion<TYPE> quaternion){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4& operator = (const Quaternion<TYPE> quaternion){
 		return SetRotation(quaternion);
 	}
 
-	template<typename TYPE> inline Matrix4x4& operator += (const Matrix4x4<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4& operator += (const Matrix4x4<TYPE> mat){
 		for (int j = 0; j < 4; j++)
 			for (int i = 0; i < 4; i++)
 				data[j][i] += mat.data[j][i];
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix4x4& operator -= (const Matrix4x4<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4& operator -= (const Matrix4x4<TYPE> mat){
 		for (int j = 0; j < 4; j++)
 			for (int i = 0; i < 4; i++)
 				data[j][i] -= mat.data[j][i];
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix4x4& operator *= (const Matrix4x4<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4& operator *= (const Matrix4x4<TYPE> mat){
 		T new_data[4][4];
 		for (int j = 0; j < 4; j++)
 			for (int i = 0; i < 4; i++)
@@ -1202,51 +1556,83 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix4x4& operator *= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4& operator *= (const TYPE val){
 		for (int j = 0; j < 4; j++)
 			for (int i = 0; i < 4; i++)
 				data[j][i] *= val;
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix4x4& operator /= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4& operator /= (const TYPE val){
 		for (int j = 0; j < 4; j++)
 			for (int i = 0; i < 4; i++)
 				data[j][i] /= val;
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix4x4<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix4x4<TYPE> mat) const{
 		Matrix4x4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix4x4<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix4x4<TYPE> mat) const{
 		Matrix4x4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix4x4<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix4x4<TYPE> mat) const{
 		Matrix4x4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
 		Matrix4x4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
 		Matrix4x4<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec4<TYPE_PROMOTE(T, TYPE)> operator * (const Vec4<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec4<TYPE_PROMOTE(T, TYPE)> operator * (const Vec4<TYPE> vec) const{
 		TYPE_PROMOTE(T, TYPE) new_x = data[0][0]*vec.x + data[0][1]*vec.y + data[0][2]*vec.z + data[0][3]*vec.w;
 		TYPE_PROMOTE(T, TYPE) new_y = data[1][0]*vec.x + data[1][1]*vec.y + data[1][2]*vec.z + data[1][3]*vec.w;
 		TYPE_PROMOTE(T, TYPE) new_z = data[2][0]*vec.x + data[2][1]*vec.y + data[2][2]*vec.z + data[2][3]*vec.w;
@@ -1254,18 +1640,30 @@ public:
 		return Vec4<TYPE_PROMOTE(T, TYPE)>(new_x, new_y, new_z, new_w);
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const Vec3<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const Vec3<TYPE> vec) const{
 		return (*this) * Vec4<TYPE>(vec, 1);
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> TransformVector(const Vec3<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> TransformVector(const Vec3<TYPE> vec) const{
 		TYPE_PROMOTE(T, TYPE) new_x = data[0][0]*vec.x + data[0][1]*vec.y + data[0][2]*vec.z + data[0][3];
 		TYPE_PROMOTE(T, TYPE) new_y = data[1][0]*vec.x + data[1][1]*vec.y + data[1][2]*vec.z + data[1][3];
 		TYPE_PROMOTE(T, TYPE) new_z = data[2][0]*vec.x + data[2][1]*vec.y + data[2][2]*vec.z + data[2][3];
 		return Vec3<TYPE_PROMOTE(T, TYPE)>(new_x, new_y, new_z);
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> RotateVector(const Vec3<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> RotateVector(const Vec3<TYPE> vec) const{
 		TYPE_PROMOTE(T, TYPE) new_x = data[0][0]*vec.x + data[0][1]*vec.y + data[0][2]*vec.z;
 		TYPE_PROMOTE(T, TYPE) new_y = data[1][0]*vec.x + data[1][1]*vec.y + data[1][2]*vec.z;
 		TYPE_PROMOTE(T, TYPE) new_z = data[2][0]*vec.x + data[2][1]*vec.y + data[2][2]*vec.z;
@@ -1275,6 +1673,9 @@ public:
 	/**
 		Return an 4x4 identity matrix
 	*/	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4 Identity() const{
 		Matrix4x4 result(*this);
 		result.SetIdentity();
@@ -1284,6 +1685,9 @@ public:
 	/**
 		Return transposed matrix, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4 Transpose() const{
 		Matrix4x4 result(*this);
 		result.SetTranspose();
@@ -1293,6 +1697,9 @@ public:
 	/**
 		Return inversed matrix, but don't change old data
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4 Inverse() const{
 		Matrix4x4 result(*this);
 		result.SetInverse();
@@ -1300,6 +1707,9 @@ public:
 	}
 
 	//	set matrix
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetIdentity(){
 		for( int j=0; j<4; j++ )
 			for( int i=0; i<4; i++ )
@@ -1307,6 +1717,9 @@ public:
 		return *this;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetTranspose(){
 		for( int j=0; j<4; j++ )
 			for( int i=j+1; i<4; i++ )
@@ -1314,6 +1727,9 @@ public:
 		return *this;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetInverse(){
 		T inv[16], det;
 
@@ -1445,6 +1861,9 @@ public:
 	/**
 	Set the matrix to be diagonal matrix, with given diagonal values
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetAsDiagonal(T diag1, T diag2, T diag3, T diag4) {
 		data[0][0] = diag1;
 		data[0][1] = 0;
@@ -1467,6 +1886,9 @@ public:
 	/**
 	Set the matrix to be diagonal matrix, with given diagonal values
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetAsDiagonal(Com4<T> diag) {
 		return SetAsDiagonal(diag[0], diag[1], diag[2], diag[3]);
 	}
@@ -1474,6 +1896,9 @@ public:
 		set rotation matrix by quaternion
 	*/
 	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetRotation(const Quaternion<TYPE> quaternion){
 		Matrix3x3<T> mat3(quaternion);
 		(*this) = mat3;
@@ -1487,6 +1912,9 @@ public:
 		\param	sin_angle	sin(rotation_angle) value
 		\return				*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetRotation(Com3<ZQ_REAL> axis, ZQ_REAL cos_angle, ZQ_REAL sin_angle){
 		*this = Matrix3x3<T>().SetRotation(axis, cos_angle, sin_angle);
 		return *this;
@@ -1498,6 +1926,9 @@ public:
 		\param	angle_rad	rotation angle in rad
 		\return				*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetRotationRad(Com3<ZQ_REAL> axis, ZQ_REAL angle_rad){
 		*this = Matrix3x3<T>().SetRotationRad(axis, angle_rad);
 		return *this;
@@ -1509,6 +1940,9 @@ public:
 		\param	angle_deg	rotation angle in degree
 		\return				*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetRotationDeg(Com3<ZQ_REAL> axis, ZQ_REAL angle_deg){
 		return SetRotationRad( axis, angle_deg*ZQ_PI/180 );
 	}
@@ -1520,6 +1954,9 @@ public:
 		\param	z		scale value in z direction
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetScale(T x, T y, T z){
 		SetAsDiagonal(x, y, z, 1);
 		return *this;
@@ -1530,6 +1967,9 @@ public:
 		\param	scale	scale value in all directions
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetScale(T scale){
 		return SetScale(scale, scale, scale);
 	}
@@ -1539,6 +1979,9 @@ public:
 		\param	scale	scale value in xZQ directions
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetScale(Com3<T> scale){
 		return SetScale(scale.x, scale.y, scale.z);
 	}
@@ -1548,6 +1991,9 @@ public:
 		\param	vec		translate value in xZQ directions
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetTranslation(Com3<T> vec){
 		SetIdentity();
 		data[0][3] = vec.x;
@@ -1563,6 +2009,9 @@ public:
 		\param	z		translate value in z direction
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetTranslation(T x, T y, T z){
 		return SetTranslation( Vec3<T>(x, y, z) );
 	}
@@ -1574,6 +2023,9 @@ public:
 		\param	up		up direction of eye
 		\return			*this
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetLookAt(Com3<T> eye, Com3<T> center, Com3<T> up){
 		//	set the matrix to be the same as calling gluLookAt, without transpose
 		typedef ZQ_REAL real;
@@ -1607,6 +2059,9 @@ public:
 	/**
 		set the matrix to be frustum projection
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetFrustum(T left, T right, T bottom, T top, T znear, T zfar){
 		T temp, temp2, temp3, temp4;
 		temp = 2.0 * znear;
@@ -1634,6 +2089,9 @@ public:
 	/**
 		set the matrix to be perspective projection
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix4x4& SetPerspective(T fovy_deg, T aspect, T znear, T zfar){
 		T ymax, xmax;
 		T temp, temp2, temp3, temp4;
@@ -1648,6 +2106,9 @@ public:
 	}
 
 	//	matrix properties
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline void RetriveColumn(Com4<T>& vec1, Com4<T>& vec2, Com4<T>& vec3, Com4<T>& vec4) const {
 		vec1.x = data[0][0];
 		vec1.y = data[1][0];
@@ -1667,6 +2128,9 @@ public:
 		vec4.w = data[3][3];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline int IsSymmetric() const {
 		if (fabs(data[0][1] - data[1][0]) > 1e-6)
 			return 0;
@@ -1683,6 +2147,9 @@ public:
 		return 1;
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T Det() const{
 		T tmp[4];
 
@@ -1717,12 +2184,18 @@ public:
 		return data[0][0] * tmp[0] + data[0][1] * tmp[1] + data[0][2] * tmp[2] + data[0][3] * tmp[3];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T Trace() const{
 		return data[0][0] + data[1][1] + data[2][2] + data[3][3];
 	}
 	/**
 		Get Rotation Matrix from the full transform matrix
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x3<ZQ_REAL> RotationMatrix(){
 		Matrix3x3<ZQ_REAL> rot_mat(
 			data[0][0], data[0][1], data[0][2], 
@@ -1734,6 +2207,9 @@ public:
 	/**
 		Get Translation Vector from the full transform matrix
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Vec3<ZQ_REAL> TranslationVector(){
 		return Vec3<ZQ_REAL>(data[0][3], data[1][3], data[2][3]);
 	}
@@ -1753,6 +2229,9 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix3x2(const T* val_ptr){
 		data[0][0] = val_ptr[0];
 		data[0][1] = val_ptr[1];
@@ -1765,6 +2244,10 @@ public:
 		data[2][0] = val_ptr[4];
 		data[2][1] = val_ptr[5];
 	}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix3x2(T val00 = 0, T val01 = 0, T val10 = 0, T val11 = 0, T val20 = 0, T val21 = 0){
 		data[0][0] = val00;
 		data[0][1] = val01;
@@ -1773,7 +2256,12 @@ public:
 		data[2][0] = val20;
 		data[2][1] = val21;
 	}
-	template<typename TYPE> Matrix3x2(const Matrix3x2<TYPE> mat){
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix3x2(const Matrix3x2<TYPE> mat){
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
 		data[1][0] = mat.data[1][0];
@@ -1781,6 +2269,10 @@ public:
 		data[2][0] = mat.data[2][0];
 		data[2][1] = mat.data[2][1];
 	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix3x2(const Com3<T> vec1, const Com3<T> vec2){
 		data[0][0] = vec1.x;
 		data[0][1] = vec2.x;
@@ -1791,6 +2283,9 @@ public:
 	}
 
 	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T* operator[] (const int id){
 		assert(id == 0 || id == 1 || id == 2);	//	id must be valid, or the last value is returned
 		if (!id)
@@ -1801,6 +2296,9 @@ public:
 			return data[2];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T* operator[] (const int id) const{
 		assert(id == 0 || id == 1 || id == 2);	//	id must be valid, or the last value is returned
 		if (!id)
@@ -1811,14 +2309,23 @@ public:
 			return data[2];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator()(const int x, const int y){
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator()(const int x, const int y) const{
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x2 operator - () const{
 		Matrix3x2 result(*this);
 		result.data[0][0] = -data[0][0];
@@ -1830,7 +2337,11 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x2& operator = (const Matrix3x2<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2& operator = (const Matrix3x2<TYPE> mat){
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
 		data[1][0] = mat.data[1][0];
@@ -1840,7 +2351,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x2& operator += (const Matrix3x2<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2& operator += (const Matrix3x2<TYPE> mat){
 		data[0][0] += mat.data[0][0];
 		data[0][1] += mat.data[0][1];
 		data[1][0] += mat.data[1][0];
@@ -1850,7 +2365,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x2& operator -= (const Matrix3x2<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2& operator -= (const Matrix3x2<TYPE> mat){
 		data[0][0] -= mat.data[0][0];
 		data[0][1] -= mat.data[0][1];
 		data[1][0] -= mat.data[1][0];
@@ -1860,7 +2379,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x2& operator *= (const Matrix2x2<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2& operator *= (const Matrix2x2<TYPE> mat){
 		T new_data[3][2];
 		new_data[0][0] = data[0][0] * mat.data[0][0] + data[0][1] * mat.data[1][0];
 		new_data[0][1] = data[0][0] * mat.data[0][1] + data[0][1] * mat.data[1][1];
@@ -1877,7 +2400,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x2& operator *= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2& operator *= (const TYPE val){
 		data[0][0] *= val;
 		data[0][1] *= val;
 		data[1][0] *= val;
@@ -1887,7 +2414,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x2& operator /= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2& operator /= (const TYPE val){
 		data[0][0] /= val;
 		data[0][1] /= val;
 		data[1][0] /= val;
@@ -1897,19 +2428,31 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix3x2<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix3x2<TYPE> mat) const{
 		Matrix3x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix3x2<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix3x2<TYPE> mat) const{
 		Matrix3x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix2x3<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix2x3<TYPE> mat) const{
 		Matrix3x3<TYPE_PROMOTE(T, TYPE)> result;
 		result.data[0][0] = data[0][0] * mat.data[0][0] + data[0][1] * mat.data[1][0];
 		result.data[0][1] = data[0][0] * mat.data[0][1] + data[0][1] * mat.data[1][1];
@@ -1923,25 +2466,41 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix2x2<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix2x2<TYPE> mat) const{
 		Matrix3x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
 		Matrix3x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
 		Matrix3x2<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const Vec2<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec3<TYPE_PROMOTE(T, TYPE)> operator * (const Vec2<TYPE> vec) const{
 		TYPE_PROMOTE(T, TYPE) new_x = data[0][0] * vec.x + data[0][1] * vec.y;
 		TYPE_PROMOTE(T, TYPE) new_y = data[1][0] * vec.x + data[1][1] * vec.y;
 		TYPE_PROMOTE(T, TYPE) new_z = data[2][0] * vec.x + data[2][1] * vec.y;
@@ -1951,6 +2510,9 @@ public:
 	/**
 		Return transposed matrix, become 2x3 matrix
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x3<T> Transpose() const{
 		Matrix2x3<T> result;
 		result.data[0][0] = data[0][0];
@@ -1978,6 +2540,9 @@ public:
 
 public:
 	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix2x3(const T* val_ptr){
 		data[0][0] = val_ptr[0];
 		data[0][1] = val_ptr[1];
@@ -1989,6 +2554,10 @@ public:
 		data[1][1] = val_ptr[4];
 		data[1][2] = val_ptr[5];
 	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix2x3(T val00 = 0, T val01 = 0, T val02 = 0, T val10 = 0, T val11 = 0, T val12 = 0){
 		data[0][0] = val00;
 		data[0][1] = val01;
@@ -1997,7 +2566,12 @@ public:
 		data[1][1] = val11;
 		data[1][2] = val12;
 	}
-	template<typename TYPE> Matrix2x3(const Matrix2x3<TYPE> mat){
+	
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	Matrix2x3(const Matrix2x3<TYPE> mat){
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
 		data[0][2] = mat.data[0][2];
@@ -2005,6 +2579,10 @@ public:
 		data[1][1] = mat.data[1][1];
 		data[1][2] = mat.data[1][2];
 	}
+	
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	Matrix2x3(const Com2<T> vec1, const Com2<T> vec2, const Com2<T> vec3){
 		data[0][0] = vec1.x;
 		data[0][1] = vec2.x;
@@ -2015,6 +2593,9 @@ public:
 	}
 
 	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T* operator[] (const int id){
 		assert(id == 0 || id == 1);	//	id must be valid, or the last value is returned
 		if (!id)
@@ -2023,6 +2604,9 @@ public:
 			return data[1];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T* operator[] (const int id) const{
 		assert(id == 0 || id == 1);	//	id must be valid, or the last value is returned
 		if (!id)
@@ -2031,14 +2615,23 @@ public:
 			return data[1];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline T& operator()(const int x, const int y){
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline const T& operator()(const int x, const int y) const{
 		return data[x][y];
 	}
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x3 operator - () const{
 		Matrix2x3 result(*this);
 		result.data[0][0] = -data[0][0];
@@ -2050,7 +2643,11 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x3& operator = (const Matrix2x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3& operator = (const Matrix2x3<TYPE> mat){
 		data[0][0] = mat.data[0][0];
 		data[0][1] = mat.data[0][1];
 		data[0][2] = mat.data[0][2];
@@ -2060,7 +2657,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x3& operator += (const Matrix2x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3& operator += (const Matrix2x3<TYPE> mat){
 		data[0][0] += mat.data[0][0];
 		data[0][1] += mat.data[0][1];
 		data[0][2] += mat.data[0][2];
@@ -2070,7 +2671,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x3& operator -= (const Matrix2x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3& operator -= (const Matrix2x3<TYPE> mat){
 		data[0][0] -= mat.data[0][0];
 		data[0][1] -= mat.data[0][1];
 		data[0][2] -= mat.data[0][2];
@@ -2080,7 +2685,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x3& operator *= (const Matrix3x3<TYPE> mat){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3& operator *= (const Matrix3x3<TYPE> mat){
 		T new_data[2][3];
 		new_data[0][0] = data[0][0] * mat.data[0][0] + data[0][1] * mat.data[1][0] + data[0][2] * mat.data[2][0];
 		new_data[0][1] = data[0][0] * mat.data[0][1] + data[0][1] * mat.data[1][1] + data[0][2] * mat.data[2][1];
@@ -2097,7 +2706,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x3& operator *= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3& operator *= (const TYPE val){
 		data[0][0] *= val;
 		data[0][1] *= val;
 		data[0][2] *= val;
@@ -2107,7 +2720,11 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x3& operator /= (const TYPE val){
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3& operator /= (const TYPE val){
 		data[0][0] /= val;
 		data[0][1] /= val;
 		data[0][2] /= val;
@@ -2117,19 +2734,31 @@ public:
 		return *this;
 	}
 
-	template<typename TYPE> inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix2x3<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator + (const Matrix2x3<TYPE> mat) const{
 		Matrix2x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result += mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix2x3<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator - (const Matrix2x3<TYPE> mat) const{
 		Matrix2x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result -= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix3x2<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix3x2<TYPE> mat) const{
 		Matrix2x2<TYPE_PROMOTE(T, TYPE)> result;
 		result.data[0][0] = data[0][0] * mat.data[0][0] + data[0][1] * mat.data[1][0] + data[0][2] * mat.data[2][0];
 		result.data[0][1] = data[0][0] * mat.data[0][1] + data[0][1] * mat.data[1][1] + data[0][2] * mat.data[2][1];
@@ -2138,25 +2767,41 @@ public:
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix3x3<TYPE> mat) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator * (const Matrix3x3<TYPE> mat) const{
 		Matrix2x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= mat;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const{
 		Matrix2x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result *= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const{
 		Matrix2x3<TYPE_PROMOTE(T, TYPE)> result(*this);
 		result /= val;
 		return result;
 	}
 
-	template<typename TYPE> inline Vec2<TYPE_PROMOTE(T, TYPE)> operator * (const Vec3<TYPE> vec) const{
+	template<typename TYPE> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec2<TYPE_PROMOTE(T, TYPE)> operator * (const Vec3<TYPE> vec) const{
 		TYPE_PROMOTE(T, TYPE) new_x = data[0][0] * vec.x + data[0][1] * vec.y + data[0][2] * vec.z;
 		TYPE_PROMOTE(T, TYPE) new_y = data[1][0] * vec.x + data[1][1] * vec.y + data[1][2] * vec.z;
 		return Vec2<TYPE_PROMOTE(T, TYPE)>(new_x, new_y);
@@ -2165,6 +2810,9 @@ public:
 	/**
 		Return transposed matrix, become 3x2 matrix
 	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x2<T> Transpose() const{
 		Matrix3x2<T> result;
 		result.data[0][0] = data[0][0];
@@ -2183,31 +2831,51 @@ public:
 /**	@name Non-member functions of Matrix
 */
 //	========================================
-template<typename TYPE, class T> inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix2x2<T> mat){
+template<typename TYPE, class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Matrix2x2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix2x2<T> mat){
 	Matrix2x2<TYPE_PROMOTE(T, TYPE)> result(mat);
 	result *= val;
 	return result;
 }
 
-template<typename TYPE, class T> inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix3x3<T> mat){
+template<typename TYPE, class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Matrix3x3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix3x3<T> mat){
 	Matrix3x3<TYPE_PROMOTE(T, TYPE)> result(mat);
 	result *= val;
 	return result;
 }
 
-template<typename TYPE, class T> inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix4x4<T> mat){
+template<typename TYPE, class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Matrix4x4<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix4x4<T> mat){
 	Matrix4x4<TYPE_PROMOTE(T, TYPE)> result(mat);
 	result *= val;
 	return result;
 }
 
-template<typename TYPE, class T> inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix3x2<T> mat){
+template<typename TYPE, class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Matrix3x2<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix3x2<T> mat){
 	Matrix3x2<TYPE_PROMOTE(T, TYPE)> result(mat);
 	result *= val;
 	return result;
 }
 
-template<typename TYPE, class T> inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix2x3<T> mat){
+template<typename TYPE, class T> 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Matrix2x3<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val, const Matrix2x3<T> mat){
 	Matrix2x3<TYPE_PROMOTE(T, TYPE)> result(mat);
 	result *= val;
 	return result;

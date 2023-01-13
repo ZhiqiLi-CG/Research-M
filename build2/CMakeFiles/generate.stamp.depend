@@ -1,0 +1,32 @@
+# CMake generation dependency list for this directory.
+D:/Research Library/Research-P/Research-M/CMakeLists.txt
+D:/Research Library/Research-P/Research-M/ResearchM/ResearchM.cmake
+D:/Research Library/Research-P/Research-M/ResearchM/ResearchM_config.h.in
+D:/Research Library/Research-P/Research-M/build2/CMakeFiles/3.21.2/CMakeCUDACompiler.cmake
+D:/Research Library/Research-P/Research-M/build2/CMakeFiles/3.21.2/CMakeCXXCompiler.cmake
+D:/Research Library/Research-P/Research-M/build2/CMakeFiles/3.21.2/CMakeRCCompiler.cmake
+D:/Research Library/Research-P/Research-M/build2/CMakeFiles/3.21.2/CMakeSystem.cmake
+D:/Research Library/Research-P/Research-M/examples/math_data_path.h.in
+D:/Research Library/Research-P/Research-M/zqBasicMath/zqBasicMath.cmake
+D:/Research Library/Research-P/Research-M/zqBasicUtils/zqBasicUtils.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeCUDAInformation.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeCXXInformation.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeCommonLanguageInclude.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeGenericSystem.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeInitializeConfigs.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeLanguageInformation.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeRCInformation.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeSystemSpecificInformation.cmake
+D:/cmake/share/cmake-3.21/Modules/CMakeSystemSpecificInitialize.cmake
+D:/cmake/share/cmake-3.21/Modules/Compiler/CMakeCommonCompilerMacros.cmake
+D:/cmake/share/cmake-3.21/Modules/Compiler/MSVC-CXX.cmake
+D:/cmake/share/cmake-3.21/Modules/Compiler/NVIDIA-CUDA.cmake
+D:/cmake/share/cmake-3.21/Modules/FindCUDA.cmake
+D:/cmake/share/cmake-3.21/Modules/FindCUDA/select_compute_arch.cmake
+D:/cmake/share/cmake-3.21/Modules/FindPackageHandleStandardArgs.cmake
+D:/cmake/share/cmake-3.21/Modules/FindPackageMessage.cmake
+D:/cmake/share/cmake-3.21/Modules/Platform/Windows-MSVC-CXX.cmake
+D:/cmake/share/cmake-3.21/Modules/Platform/Windows-MSVC.cmake
+D:/cmake/share/cmake-3.21/Modules/Platform/Windows-NVIDIA-CUDA.cmake
+D:/cmake/share/cmake-3.21/Modules/Platform/Windows.cmake
+D:/cmake/share/cmake-3.21/Modules/Platform/WindowsPaths.cmake

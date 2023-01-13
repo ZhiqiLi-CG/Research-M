@@ -40,7 +40,7 @@ int main() {
 	int example = 0;
 	printf("the example:");
 	scanf("%d", &example);
-	zq::readDenseVectorPointsFromFile(file_list[example].c_str(), points);
+	zq::utils::readDenseVectorPointsFromFile(file_list[example].c_str(), points);
 	// 2. set the epsilon list
 	for (int i = 0; i < reso_epsilon; i++) {
 		epsilon_list.push_back(max_epsilon / reso_epsilon * i);

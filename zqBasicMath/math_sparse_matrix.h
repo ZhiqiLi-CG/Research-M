@@ -25,7 +25,7 @@
 #include <zqBasicMath/math_vector.h>
 #include <zqBasicMath/math_sparse_vector.h>
 #include <zqBasicUtils/utils_reorder.h>
-#include <zqBasicMath/math_numerical_utils.h>
+#include <zqBasicMath/math_utils.h>
 namespace zq{
 
 //	========================================

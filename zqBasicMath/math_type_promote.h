@@ -18,7 +18,7 @@
 /***********************************************************/
 #ifndef __MATH_TYPE_PROMOTE_H__
 #define __MATH_TYPE_PROMOTE_H__
-
+#include<zqBasicUtils/utils_common.h>
 namespace zq{
 
 /**

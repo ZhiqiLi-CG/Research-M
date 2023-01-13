@@ -11,7 +11,7 @@
 #include<zqBasicMath/math_vector.h>
 #include<zqBasicMath/math_matrix.h>
 #include<zqBasicMath/math_quaternion.h>
-#include<zqBasicMath/math_lookup_table.h>
+#include<zqBasicUtils/utils_lookup_table.h>
 #include<zqBasicMath/math_dense.h>
 #include<zqBasicMath/math_dense_solver.h>
 
