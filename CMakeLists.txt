@@ -48,6 +48,7 @@ message(STATUS "${PROJECT_BINARY_DIR}/data_path.h created,\n DATA_PATH=${MATH_DA
 ###############################################
 include(ResearchM/ResearchM.cmake)
 include_directories(${ResearchM_INCLUDE_DIRS})
+Set_ResearchM_Env()
 
 ###############################################
 # Example Projects
