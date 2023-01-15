@@ -122,6 +122,21 @@ public:
 #ifdef  RESEARCHM_ENABLE_CUDA
 	__host__ __device__
 #endif
+	inline Vec<T,2> col(const int idx) const {
+		return Vec<T, 2>(data[0][idx], data[1][idx]);
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline void colSet(const int idx, const Vec<T, 2>& vec){
+		data[0][idx] = vec[0];
+		data[1][idx] = vec[1];
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix2x2 operator - () const{
 		Matrix2x2 result(*this);
 		result.data[0][0] = - data[0][0];
@@ -630,6 +645,22 @@ public:
 #endif
 	inline const T& operator()(const int x, const int y) const{
 		return data[x][y];
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec<T, 3> col(const int idx) const {
+		return Vec<T, 3>(data[0][idx], data[1][idx], data[2][idx]);
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline void colSet(const int idx, const Vec<T, 3>& vec){
+		data[0][idx] = vec[0];
+		data[1][idx] = vec[1];
+		data[2][idx] = vec[2];
 	}
 
 #ifdef  RESEARCHM_ENABLE_CUDA
@@ -1458,6 +1489,23 @@ public:
 #endif
 	inline const T& operator()(const int x, const int y) const{
 		return data[x][y];
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec<T, 4> col(const int idx) const {
+		return Vec<T, 4>(data[0][idx], data[1][idx], data[2][idx], data[3][idx]);
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline void colSet(const int idx, const Vec<T, 4>& vec) {
+		data[0][idx] = vec[0];
+		data[1][idx] = vec[1];
+		data[2][idx] = vec[2];
+		data[3][idx] = vec[3];
 	}
 
 #ifdef  RESEARCHM_ENABLE_CUDA
@@ -2326,6 +2374,22 @@ public:
 #ifdef  RESEARCHM_ENABLE_CUDA
 	__host__ __device__
 #endif
+	inline Vec<T, 3> col(const int idx) const {
+		return Vec<T, 3>(data[0][idx], data[1][idx], data[2][idx]);
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline void colSet(const int idx, const Vec<T, 3>& vec)  {
+		data[0][idx] = vec[0];
+		data[1][idx] = vec[1];
+		data[2][idx] = vec[2];
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
 	inline Matrix3x2 operator - () const{
 		Matrix3x2 result(*this);
 		result.data[0][0] = -data[0][0];
@@ -2627,6 +2691,22 @@ public:
 #endif
 	inline const T& operator()(const int x, const int y) const{
 		return data[x][y];
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline Vec<T, 2> col(const int idx) const {
+		return Vec<T, 2>(data[0][idx], data[1][idx]);
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline void colSet(const int idx, const Vec<T, 2>& vec) {
+		data[0][idx] = vec[0];
+		data[1][idx] = vec[1];
+		
 	}
 
 #ifdef  RESEARCHM_ENABLE_CUDA
@@ -3002,6 +3082,69 @@ typedef Matrix2x3<float>				Matrix2x3f;
 typedef Matrix2x3<double>				Matrix2x3d;
 typedef Matrix2x3<long double>			Matrix2x3ld;
 
+template<class T, int d = 2>
+using Mat = typename std::conditional<d == 2, Matrix2x2<T>,
+	typename std::conditional<d == 3, Matrix3x3<T>, Matrix4x4<T> >::type
+>::type;
+
+#define Typedef_MatrixD(d) \
+using MatD=zq::Mat<real,d>;
+
+#define Typedef_MatrixDi(d) \
+using MatDi=zq::Mat<int,d>;
+
+#define Typedef_MatrixDDi(d) \
+using MatD=zq::Mat<real,d>; \
+using MatDi=zq::Mat<int,d>;
+
+/*#define Typedef_MatrixDDi_Utils(d) \
+using MatrixD=Matrix<real,d>; \
+using VecDi=Matrix<int,d>;\
+using vecd_one = vec_one<real,d>;\
+using vecdi_one = vec_one<int, d>;
+*/
+
+#define Typedef_MatrixTD(d) \
+using MatD=zq::Mat<real,d>; \
+using MatT = zq::Mat<real, d-1>;
+
+#define Typedef_MatrixTDi(d) \
+using MatDi=zq::Mat<int,d>; \
+using MatTi=zq::Mat<int,d-1>; 
+
+#define Typedef_MatrixTTDDi(d) \
+using MatD=zq::Mat<real,d>; \
+using MatDi=zq::Mat<int,d>; \
+using MatT = zq::Mat<real, d-1>; \
+using MatTi = zq::Mat<int, d-1>;
+
+
+template<typename T1, typename T2, int d>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+inline Mat<TYPE_PROMOTE(T1, T2),d> mul (Vec<T1,d> vec1, Vec<T2, d> vec2) {
+	Mat<TYPE_PROMOTE(T1, T2), d> mat;
+	for (int i = 0; i < d; i++) {
+		for (int j = 0; j < d; j++) {
+			mat(i, j) = vec1[i] * vec2[j];
+		}
+	}
+	return mat;
+}
+
+
+/*
+#define Typedef_VectorTTDDi_Utils(d) \
+using VecD=Vec<real,d>; \
+using VecDi=Vec<int,d>;\
+using vecd_one = vec_one<real,d>;\
+using vecdi_one = vec_one<int, d>;\
+using VecT = Vec<real, d-1>; \
+using VecTi = Vec<int, d-1>; \
+using vect_one = vec_one<real, d-1>;\
+using vecti_one = vec_one<int, d-1>;
+*/
 }	//	end namespace ZQ
 
 #endif	//	__ZQ_MATRIX_H__

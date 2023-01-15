@@ -303,7 +303,25 @@ inline T calculateMeanValue(const std::vector<T>& data) {
 	return calculateMeanValue((T*)&data[0], data.size());
 }
 ///@}
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+real QuickPower2(const real a) { return a * a; }
 
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+real QuickPower3(const real a) { return a * a * a; }
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+real QuickPower4(const real a) { real b = a * a; return b * b; }
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+real QuickPower5(const real a) { real b = a * a; return b * b * a; }
 }
 
 #endif	

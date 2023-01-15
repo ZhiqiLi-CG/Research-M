@@ -612,8 +612,8 @@ namespace zq {
 				rhs[i] = xy_ptr[k * (d + 1) + i] * xy_ptr[k * (d + 1) + d];
 			}
 		}
-		matrixSetInverse(mat, d);
-		matrixMultiplyMatrix(k, mat, rhs, d, d, 1);
+		matrixSetInverse(&(mat[0][0]), d);
+		matrixMultiplyMatrix(k, &(mat[0][0]), &(rhs[0]), d, d, 1);
 		return 1;
 	}
 

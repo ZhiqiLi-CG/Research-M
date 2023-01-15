@@ -254,12 +254,12 @@ namespace zq {
 		template<class T> void Write_Array_Stream(std::ostream& output, const Array<T>& arr) {
 			std::uint32_t n = (std::uint32_t)arr.size();
 			Write_Binary<std::uint32_t>(output, n);
-			Write_Array_Stream_Content(output, arr);
+			Write_Array_Stream_Content<T>(output, arr);
 		}
 		template<class T, class F> void Write_Array_Stream(std::ostream& output, F& f, std::uint32_t n) {
 			Array<T> arr(n);
 			for (int i = 0; i < n; i++) arr[i] = f(i);
-			Write_Array_Stream(output, arr);
+			Write_Array_Stream<T>(output, arr);
 		}
 		void Read_Array_Stream_Content(std::istream& input, Array<bool>& arr, const std::uint32_t& n) {
 			arr.resize(n);
@@ -277,26 +277,26 @@ namespace zq {
 		template<class T> void Read_Array_Stream(std::istream& input, Array<T>& arr) {
 			std::uint32_t n;
 			Read_Binary<std::uint32_t>(input, n);
-			Read_Array_Stream_Content(input, arr, n);
+			Read_Array_Stream_Content<T>(input, arr, n);
 		}
 
 		//File Style
 		template<class T> bool Write_Array(const std::string& file_name, const Array<T>& arr) {
 			std::ofstream output(file_name, std::ios::binary);
 			if (!output) return false;
-			Write_Array_Stream(output, arr);
+			Write_Array_Stream<T>(output, arr);
 			output.close();
 			return true;
 		}
 		template<class T, class F> bool Write_Array(const std::string& file_name, F& f, std::uint32_t n) {
 			Array<T> arr(n);
 			for (int i = 0; i < n; i++) arr[i] = f(i);
-			return Write_Array(file_name, arr);
+			return Write_Array<T>(file_name, arr);
 		}
 		template<class T> bool Read_Array(const std::string& file_name, Array<T>& arr) {
 			std::ifstream input(file_name, std::ios::binary);
 			if (!input) return false;
-			Read_Array_Stream(input, arr);
+			Read_Array_Stream<T>(input, arr);
 			input.close();
 			return true;
 		}

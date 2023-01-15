@@ -1147,6 +1147,8 @@ inline Vec3<TYPE_PROMOTE(T1, T2)> cross(const Vec3<T1> a, const Vec3<T2> b){
 	return result;
 }
 
+
+
 ///@}
 
 //	========================================
@@ -1248,6 +1250,72 @@ template<class T,int d=2>
 using Vec = typename std::conditional<d == 2, Vec2<T>,
 	typename std::conditional<d == 3, Vec3<T>, Vec4<T> >::type
 >::type;
+
+template<class T, int d>
+Vec<T, d> vec_one() {
+	Vec<T, d> one;
+	for (int i = 0; i < d; i++) {
+		one[i] = (T)1;
+	}
+	return one;
+}
+
+#define Typedef_VectorD(d) \
+using VecD=zq::Vec<real,d>;
+
+#define Typedef_VectorDi(d) \
+using VecDi=zq::Vec<int,d>;
+
+#define Typedef_VectorDDi(d) \
+using VecD=zq::Vec<real,d>; \
+using VecDi=zq::Vec<int,d>;
+
+#define Typedef_VectorTD(d) \
+using VecD=zq::Vec<real,d>; \
+using VecT = zq::Vec<real, d-1>;
+
+#define Typedef_VectorTDi(d) \
+using VecDi=zq::Vec<int,d>; \
+using VecTi=zq::Vec<int,d-1>; 
+
+#define Typedef_VectorTTDDi(d) \
+using VecD=zq::Vec<real,d>; \
+using VecDi=zq::Vec<int,d>; \
+using VecT = zq::Vec<real, d-1>; \
+using VecTi = zq::Vec<int, d-1>;
+
+template<class T, int d>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+int minVecCoord(const Vec<T, d>& v) {
+	if constexpr (d == 1) return 0;
+	else if constexpr (d == 2) return v[0] < v[1] ? 0 : 1;
+	else if constexpr (d == 3) {
+		return v[0] < v[1] ? (v[0] < v[2] ? 0 : 2) : (v[1] < v[2] ? 1 : 2);
+	}
+	else if constexpr (d == 4) {
+		int idx = 0;
+		for (int i = 1; i < 4; i++) {
+			if (v[i] < v[idx]) idx = i;
+		}
+		return idx;
+	}
+}
+
+template<class T, int d>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
+Vec<T, d> orthogonalVector(Vec<T, d> v) {
+	if constexpr (d == 2) return Vec<T, d>(v[1], -v[0]);
+	else if constexpr (d == 3) {
+		int index = minVecCoord<T,d>(v);
+		return (index == 0) ?
+			(Vec<T, d>(0, -v[2], v[1])) :
+			((index == 1) ? Vec<T, d>(v[2], 0, -v[0]) : Vec<T, d>(-v[1], v[0], 0));
+	}
+}
 
 }	//	end namespace ZQ
 
