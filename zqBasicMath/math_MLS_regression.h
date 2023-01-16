@@ -52,7 +52,7 @@ namespace zq {
 	#endif
 	inline int fitMovingLeastSquare2D(T* coef, T* xy_ptr, int point_num,T* origin) {
 		T* mls_xy=new T[4 * point_num];
-		for (int i = 0,int j = 0; i < point_num; i+=4,j+=2) {
+		for (int i = 0,int j = 0; i < 4 * point_num; i+=4,j+=2) {
 			T w = MLS_Weight(xy_ptr[j], origin[0]);
 			mls_xy[i] = (T)1;
 			mls_xy[i + 1] = w * xy_ptr[j];
@@ -79,7 +79,7 @@ namespace zq {
 #endif
 	inline int fitMovingLeastSquare3D(T* coef, T* xy_ptr, int point_num, T* origin) {
 		T* mls_xy= new T[7 * point_num];
-		for (int i = 0, j = 0; i < point_num; i += 7, j += 3) {
+		for (int i = 0, j = 0; i < 7 * point_num; i += 7, j += 3) {
 			T w = MLS_Weight(xy_ptr[j], xy_ptr[j + 1], origin[0], origin[1]);
 			mls_xy[i] = (T)1;
 			mls_xy[i + 1] = w * xy_ptr[j];
@@ -88,6 +88,7 @@ namespace zq {
 			mls_xy[i + 4] = w * xy_ptr[j + 1] * xy_ptr[j+1];
 			mls_xy[i + 5] = w * xy_ptr[j + 1] * xy_ptr[j];
 			mls_xy[i + 6] = w * xy_ptr[j+2];
+			//printf("%f %f %f %f %f %f %f\n", mls_xy[i], mls_xy[i+1], mls_xy[i+2], mls_xy[i+3], mls_xy[i+4], mls_xy[i+5], mls_xy[i+5]);
 		}
 		int res=fitLeastSquare<T,6>(coef, mls_xy, point_num);
 		delete[] mls_xy;

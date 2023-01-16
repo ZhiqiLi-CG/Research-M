@@ -1290,14 +1290,14 @@ __host__ __device__
 #endif
 int minVecCoord(const Vec<T, d>& v) {
 	if constexpr (d == 1) return 0;
-	else if constexpr (d == 2) return v[0] < v[1] ? 0 : 1;
+	else if constexpr (d == 2) return abs(v[0]) < abs(v[1]) ? 0 : 1;
 	else if constexpr (d == 3) {
-		return v[0] < v[1] ? (v[0] < v[2] ? 0 : 2) : (v[1] < v[2] ? 1 : 2);
+		return abs(v[0]) < abs(v[1]) ? (abs(v[0]) < abs(v[2]) ? 0 : 2) : (abs(v[1]) < abs(v[2]) ? 1 : 2);
 	}
 	else if constexpr (d == 4) {
 		int idx = 0;
 		for (int i = 1; i < 4; i++) {
-			if (v[i] < v[idx]) idx = i;
+			if (abs(v[i]) < abs(v[idx])) idx = i;
 		}
 		return idx;
 	}
