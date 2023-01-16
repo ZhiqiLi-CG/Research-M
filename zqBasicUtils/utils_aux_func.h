@@ -15,7 +15,7 @@
 #ifdef _DEBUG
 	#pragma comment(lib,"fmtd.lib")
 #else
-	#pragma comment(lib,fmt.lib)
+	#pragma comment(lib,"fmt.lib")
 #endif
 namespace zq {
 	// Assert
