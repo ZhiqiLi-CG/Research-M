@@ -599,21 +599,25 @@ namespace zq {
 #ifdef  RESEARCHM_ENABLE_CUDA
 	__host__ __device__
 #endif
-	inline int fitLeastSquare(T* k, const T* xy_ptr, int point_num) {
+	inline int fitLeastSquare(T* coef, const T* xy_ptr, int point_num) {
 		if (point_num < 2)
-			return d;
+			return 0;
 		T mat[d][d]={0};
 		T rhs[d]={0};
 		for (int k = 0; k < point_num; k++) {
 			for (int i = 0; i < d; i++) {
 				for (int j = 0; j < d; j++) {
-					mat[i][j] = xy_ptr[k * (d + 1) + i]* xy_ptr[k * (d + 1) + j];
+					mat[i][j] += xy_ptr[k * (d + 1) + i]* xy_ptr[k * (d + 1) + j];
 				}
-				rhs[i] = xy_ptr[k * (d + 1) + i] * xy_ptr[k * (d + 1) + d];
+				rhs[i] += xy_ptr[k * (d + 1) + i] * xy_ptr[k * (d + 1) + d];
 			}
 		}
+		//printf("ppp,%d",d);
 		matrixSetInverse(&(mat[0][0]), d);
-		matrixMultiplyMatrix(k, &(mat[0][0]), &(rhs[0]), d, d, 1);
+		matrixMultiplyMatrix(coef, &(mat[0][0]), &(rhs[0]), d, d, 1);
+		//for (int i = 0; i < d; i++)
+		//	printf("]%f,", coef[i]);
+		//printf("\n");
 		return 1;
 	}
 
