@@ -1252,6 +1252,9 @@ using Vec = typename std::conditional<d == 2, Vec2<T>,
 >::type;
 
 template<class T, int d>
+#ifdef  RESEARCHP_ENABLE_CUDA
+__host__ __device__
+#endif
 Vec<T, d> vec_one() {
 	Vec<T, d> one;
 	for (int i = 0; i < d; i++) {

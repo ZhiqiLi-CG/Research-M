@@ -10,7 +10,11 @@
 #define __MATH_FIXED_MATRIX_H__
 
 #include <math.h>
-
+#include<ResearchM_config.h>
+#ifdef  RESEARCHM_ENABLE_CUDA
+#include <zqBasicUtils/utils_cuda.h>
+#endif
+#include<zqBasicMath/math_utils.h>
 namespace zq{
 /**
 	Set a matrix to be identity matrix
@@ -46,6 +50,9 @@ inline void matrixSetTranspose(T* mat, int dim){
 	\param	n		columes of the original matrix
 */
 template<typename T>
+#ifdef  RESEARCHP_ENABLE_CUDA
+__host__ __device__
+#endif
 inline void matrixSetTranspose(T* mat, int m, int n){
 	T *buf = new T[m*n];
 	memcpy(buf, mat, sizeof(T)*m*n);
@@ -64,13 +71,23 @@ inline void matrixSetTranspose(T* mat, int m, int n){
 	\param	dim		dimension of the matrix
 */
 template<typename T>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
 inline int matrixSetInverse(T* mat, int dim){
 
 	T* inv = new T[dim*dim];
 
 	//	save old data
 	T* mat_old = new T[dim*dim];
-	memcpy(mat_old, mat, sizeof(T)*dim*dim);
+#ifdef  RESEARCHM_ENABLE_CUDA
+	for (int i = 0; i < dim * dim; i++) {
+		mat_old[i] = mat[i];
+	}
+#else
+	memcpy(mat_old, mat, sizeof(T) * dim * dim);
+#endif
+
 
 	//	set up identity matrix
 	for( int j=0; j<dim; j++ )	
@@ -92,13 +109,19 @@ inline int matrixSetInverse(T* mat, int dim){
 		//	swap make the row with biggest value on top
 		if( max_val_j != j ){		//	need to swap
 			for( int i=0; i<dim; i++ ){
-				std::swap( mat[j*dim+i], mat[max_val_j*dim+i] );
-				std::swap( inv[j*dim+i], inv[max_val_j*dim+i] );
+				mySwap( mat[j*dim+i], mat[max_val_j*dim+i] );
+				mySwap( inv[j*dim+i], inv[max_val_j*dim+i] );
 			}
 		}
 		//	check whether the max_val is 0, if so, inverse doesn't exist
 		if( max_val > -0.000001 && max_val < 0.000001 ){
+#ifdef  RESEARCHM_ENABLE_CUDA
+		for (int kk = 0; kk < dim * dim; kk++) {
+			mat[kk] = mat_old[kk];
+		}
+#else
 			memcpy(mat, mat_old, sizeof(T)*dim*dim);
+#endif
 			delete[] mat_old;
 			delete[] inv;
 			return 0;
@@ -130,7 +153,14 @@ inline int matrixSetInverse(T* mat, int dim){
 	}
 
 	//	set value
-	memcpy(mat, inv, sizeof(T)*dim*dim);
+#ifdef  RESEARCHM_ENABLE_CUDA
+	for (int i = 0; i < dim * dim; i++) {
+		mat[i] = inv[i];
+	}
+#else
+	memcpy(mat, inv, sizeof(T) * dim * dim);
+#endif
+
 
 	delete[] mat_old;
 	delete[] inv;
@@ -149,6 +179,9 @@ inline int matrixSetInverse(T* mat, int dim){
 	\param	n		cols of matrix B
 */
 template<typename T>
+#ifdef  RESEARCHM_ENABLE_CUDA
+__host__ __device__
+#endif
 inline void matrixMultiplyMatrix(T* res, T* A, T* B, int m, int k, int n){
 	T* mul = new T[m*n];
 	for( int j=0; j<m; j++ )
@@ -158,7 +191,14 @@ inline void matrixMultiplyMatrix(T* res, T* A, T* B, int m, int k, int n){
 				sum += A[j*k+z] * B[z*n+i];
 			mul[j*n+i] = sum;
 		}
-	memcpy(res, mul, sizeof(T)*m*n);
+#ifdef  RESEARCHM_ENABLE_CUDA
+	for (int i = 0; i < m * n;i++) {
+		res[i] = mul[i];
+	}
+#else
+	memcpy(res, mul, sizeof(T) * m * n);
+#endif
+
 	delete[] mul;
 }
 

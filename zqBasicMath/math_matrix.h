@@ -365,7 +365,7 @@ public:
 			data[1][1] /= det;
 		}
 		else{
-			std::cout << "not invertable" << std::endl;
+			printf("not invertable\n");
 		}
 		return *this;
 	}
@@ -964,7 +964,7 @@ public:
 			data[2][2] = inv[0][8] / det;
 		}
 		else{
-			std::cout << "not invertable" << std::endl;
+			printf("not invertable");
 		}
 		return *this;
 	}
@@ -1900,7 +1900,7 @@ public:
 				data[0][i] = inv[i] / det;
 		}
 		else{
-			std::cout << "not invertable" << std::endl;
+			printf("not invertable");
 		}
 
 		return *this;
