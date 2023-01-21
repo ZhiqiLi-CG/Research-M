@@ -10,7 +10,6 @@
 #define __UTILS_COMMON_BASIC_H__
 
 #include<ResearchM_config.h>
-#include<math_data_path.h>
 #include <iostream>
 namespace zq {
 	#define Declare_REAL_Types(my_type)  \

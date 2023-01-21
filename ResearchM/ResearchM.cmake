@@ -16,7 +16,12 @@ macro(Set_ResearchM_Options)
 endmacro()
 
 macro(Set_ResearchM_Env)
-
+	set(ResearchM_INCLUDE_DIRS
+		${ResearchM_INCLUDE_DIR}
+		${zqBasicUtils_INCLUDE_DIRS}
+		${zqBasicMath_INCLUDE_DIRS}
+		${PROJECT_BINARY_DIR})
+	message(STATUS "Note here:${ResearchM_INCLUDE_DIRS}")
 	# ---------- CUDA ----------
 	if(CUDA_ENABLE)
 		find_package(CUDA  REQUIRED)

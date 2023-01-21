@@ -97,20 +97,15 @@ namespace zq {
 		template<class T, int side = HOST> 
 		void Array_Add(Array<T,side>& a, const Array<T, side>& b, const real c = 1) {//a+=b*c		
 			Assert(a.size() == b.size(), "ArrayFunc::Array_Sum: size unmatch");
-#ifdef RESEARCHM_ENABLE_CUDA
-			real* b_ptr = thrust::raw_pointer_cast(&b[0]);
-			real* a_ptr = thrust::raw_pointer_cast(&a[0]);
-#else
-			real* b_ptr = &b[0];
-			real* a_ptr = &a[0];
-#endif
+			const T* b_ptr = get_ptr<T,side>(b);
+			T* a_ptr = get_ptr<T, side>(a);
 			auto add_f = [a_ptr, b_ptr, c]
 #ifdef RESEARCHM_ENABLE_CUDA
 				__device__ __host__
 #endif
-				(const int idx)->real {
+				(const int idx)->T {
 				return a_ptr[idx] + b_ptr[idx] * c;
-			}
+			};
 			Calc_Each<decltype(add_f), side>(
 				add_f,
 				a
