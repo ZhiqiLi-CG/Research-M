@@ -2,6 +2,12 @@ set(ResearchM_DIR ${CMAKE_CURRENT_LIST_DIR})
 include(${ResearchM_DIR}/../zqBasicUtils/zqBasicUtils.cmake)
 include(${ResearchM_DIR}/../zqBasicMath/zqBasicMath.cmake)
 get_filename_component(ResearchM_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../ ABSOLUTE)
+set(ResearchM_INCLUDE_DIRS
+	${ResearchM_INCLUDE_DIR}
+	${zqBasicUtils_INCLUDE_DIRS}
+	${zqBasicMath_INCLUDE_DIRS}
+	${PROJECT_BINARY_DIR})
+	message(STATUS "Note here:${ResearchM_INCLUDE_DIRS}")
 	
 macro(Set_ResearchM_Options)
 	#----------- Set Option-------
@@ -10,12 +16,7 @@ macro(Set_ResearchM_Options)
 endmacro()
 
 macro(Set_ResearchM_Env)
-	set(ResearchM_INCLUDE_DIRS
-		${ResearchM_INCLUDE_DIR}
-		${zqBasicUtils_INCLUDE_DIRS}
-		${zqBasicMath_INCLUDE_DIRS}
-		${PROJECT_BINARY_DIR})
-		message(STATUS "Note here:${ResearchM_INCLUDE_DIRS}")
+
 	# ---------- CUDA ----------
 	if(CUDA_ENABLE)
 		find_package(CUDA  REQUIRED)
