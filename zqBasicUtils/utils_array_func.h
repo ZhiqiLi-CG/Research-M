@@ -92,29 +92,166 @@ namespace zq {
 			#endif
 
 		}
+		
 		//Parallel Array Operations
 		template<class T, int side = HOST> 
 		void Array_Add(Array<T,side>& a, const Array<T, side>& b, const real c = 1) {//a+=b*c		
 			Assert(a.size() == b.size(), "ArrayFunc::Array_Sum: size unmatch");
+#ifdef RESEARCHM_ENABLE_CUDA
+			real* b_ptr = thrust::raw_pointer_cast(&b[0]);
+			real* a_ptr = thrust::raw_pointer_cast(&a[0]);
+#else
+			real* b_ptr = &b[0];
+			real* a_ptr = &a[0];
+#endif
+			auto add_f = [a_ptr, b_ptr, c]
+#ifdef RESEARCHM_ENABLE_CUDA
+				__device__ __host__
+#endif
+				(const int idx)->real {
+				return a_ptr[idx] + b_ptr[idx] * c;
+			}
+			Calc_Each<decltype(add_f), side>(
+				add_f,
+				a
+				);
+		}
+		
+		// Parallel Max Operations
+		//https://mangoroom.cn/parallel-programming/learn-openmp-reduction.html
+		template<class T, int side = HOST>
+		int Array_Max(Array<T, side>& a, T& val) {//max(a)		
+			if (a.size()==0) return 0;
 			if constexpr (side == HOST) {
-				#pragma omp parallel for
-				for (int i = 0; i < a.size(); i++) {
-					a[i] += b[i] * c;
+				val = a[0];
+#pragma omp parallel for reduction(max:val)
+				for (int i = 1; i < a.size(); ++i)
+				{
+					val = myMax(val, a[i]);
 				}
 			}
-			#ifdef RESEARCHM_ENABLE_CUDA
-				else if constexpr(side == DEVICE) {
-					real* b_ptr = thrust::raw_pointer_cast(&b[0]);
-					real* a_ptr = thrust::raw_pointer_cast(&a[0]);
-					Calc_Each(
-						[a_ptr,b_ptr, c] __device__ __host__(const int idx)->real {
-							return a_ptr[idx]+b_ptr[idx] * c;
-						},
-						a
-					);
-				}
-			#endif
+#ifdef RESEARCHM_ENABLE_CUDA
+			else if constexpr (side == DEVICE) {
+				//https ://blog.csdn.net/andeyeluguo/article/details/80093801
+				thrust::device_ptr<T> d_ptr = thrust::device_pointer_cast(a);
+				val = *(thrust::max_element(d_ptr, d_ptr + length));
+			}
+#endif
+			return 1;
 		}
+
+		// Parallel Min Operations
+		template<class T, int side = HOST>
+		int Array_Min(Array<T, side>& a, T& val) {//a+=b*c		
+			if (a.size() == 0) return 0;
+			if constexpr (side == HOST) {
+				val = a[0];
+#pragma omp parallel for reduction(max:val)
+				for (int i = 1; i < a.size(); ++i)
+				{
+					val = myMin(val, a[i]);
+				}
+			}
+#ifdef RESEARCHM_ENABLE_CUDA
+			else if constexpr (side == DEVICE) {
+				//https ://blog.csdn.net/andeyeluguo/article/details/80093801
+				thrust::device_ptr<T> a_ptr = thrust::device_pointer_cast(a);
+				val = *(thrust::min_element(a_ptr, a_ptr +a.size()));
+			}
+#endif
+			return 1;
+		}
+
+		// Parallel Sum Operations
+		template<class T, int side = HOST>
+		int Array_Sum(Array<T, side>& a, T& val) {//a+=b*c		
+			if (a.size() == 0) return 0;
+			if constexpr (side == HOST) {
+				val = a[0];
+#pragma omp parallel for reduction(+:val)
+				for (int i = 1; i < a.size(); ++i)
+				{
+					val += a[i];
+				}
+			}
+#ifdef RESEARCHM_ENABLE_CUDA
+			else if constexpr (side == DEVICE) {
+				//https ://blog.csdn.net/andeyeluguo/article/details/80093801
+				val=thrust::reduce(a.begin, a.end(), (T)0, thrust::plus <T>());
+			}
+#endif
+			return 1;
+		}
+
+		// Parallel Cond Sum Operations
+		template<class T,class FT,int side = HOST>
+		int Array_Count_If(Array<T, side>& a, int& val, const FT& cond) {//a+=b*c		
+			if (a.size() == 0) return 0;
+			if constexpr (side == HOST) {
+				val = (T)0;
+#pragma omp parallel for reduction(+:val)z
+				for (int i = 0; i < a.size(); ++i)
+				{
+						val += FT(a[i])?1:0;
+				}
+			}
+#ifdef RESEARCHM_ENABLE_CUDA
+			else if constexpr (side == DEVICE) {
+				//https ://blog.csdn.net/andeyeluguo/article/details/80093801
+				val = thrust::count_if(a.begin, a.end(), cound);
+			}
+#endif
+			return 1;
+		}
+
+		// Parallel Abs Operations
+		template<class T, int side = HOST>
+		int Array_Abs(const Array<T, side>& a, Array<T, side>& res) {//a+=b*c		
+			if (a.size() == 0) return 0;
+			res.resize(a.size());
+			if constexpr (side == HOST) {
+				#pragma omp parallel for
+				for (int i = 0; i < res.size(); ++i)
+				{
+					res[i]  = abs(a[i]);
+				}
+			}
+#ifdef RESEARCHM_ENABLE_CUDA
+			else if constexpr (side == DEVICE) {
+				T* a_ptr = thrust::raw_pointer_cast(&a[0]);
+				Calc_Each(
+					[a_ptr]__device__ __host__ (const int i) ->T {
+						return abs(a_ptr[i])
+					}
+					, res
+				);
+			}
+#endif
+			return 1;
+		}
+
+		// Parallel Abs Sum Operations
+		template<class T, int side = HOST>
+		int Array_Abs_Sum(Array<T, side>& a, T& val) {//a+=b*c		
+			if (a.size() == 0) return 0;
+			if constexpr (side == HOST) {
+				val = a[0];
+#pragma omp parallel for reduction(+:val)
+				for (int i = 1; i < a.size(); ++i)
+				{
+					val += abs(a[i]);
+				}
+			}
+#ifdef RESEARCHM_ENABLE_CUDA
+			else if constexpr (side == DEVICE)
+				Array<T, side> tem(a.size());
+				Array_Abs<T, side>(a,tem);
+				val = thrust::reduce(tem.begin, tem.end(), (T)0, thrust::plus <T>());
+			}
+#endif
+			return 1;
+		}
+
 
 		template<class T, int side = HOST> void Copy(Array<T,side>& a, const Array<T, side>& b) {
 			Assert(a.size() == b.size(), "ArrayFunc::Copy: size unmatch");
@@ -131,6 +268,7 @@ namespace zq {
 				}
 			#endif
 		}
+
 		template<class Fvoid, class T, int side = HOST> void Exec_Each(Fvoid f, Array<T,side>& a) {
 			int N = a.size();
 			if constexpr (side == HOST) {

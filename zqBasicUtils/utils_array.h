@@ -50,6 +50,25 @@ namespace zq {
 		template<class T, int side = 0>
 		using ArrayIter = typename Array<T, side>::iterator;
 #define counting thrust::counting_iterator<int>
+
+		template<class T,int side>
+		T* get_ptr(Array<T,side>& arr) {
+#ifdef RESEARCHM_ENABLE_CUDA
+			return thrust::raw_pointer_cast(&arr[0]);
+#else
+			return &arr[0];
+#endif
+		}
+
+		template<class T, int side>
+		const T* get_ptr(const Array<T, side>& arr) {
+#ifdef RESEARCHM_ENABLE_CUDA
+			return thrust::raw_pointer_cast(&arr[0]);
+#else
+			return &arr[0];
+#endif
+		}
+
 }
 
 #endif	

@@ -9,14 +9,16 @@ ResearchM_Deps(${project_name})
 ###############################################
 # Add the project 
 ###############################################
-project(${project_name} LANGUAGES CXX CUDA)
+
 if(CUDA_ENABLE)
+	project(${project_name} LANGUAGES CXX CUDA)
 	file(GLOB  SOURCES
 		"./*.h"
 		"./*.cpp"
 		"./*.cu"
 	)
 else()
+	project(${project_name} LANGUAGES CXX)
 	file(GLOB  SOURCES
 		"./*.h"
 		"./*.cpp"

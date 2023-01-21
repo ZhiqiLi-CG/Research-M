@@ -2,7 +2,15 @@ cmake_minimum_required (VERSION 3.2)
 
 message("This CMakeList.txt is written for 64bit system only")
 
-project (ResearchMExamples LANGUAGES CXX CUDA)
+include(ResearchM/ResearchM.cmake)
+Set_ResearchM_Options()
+
+if(CUDA_ENABLE)	
+	project (ResearchMExamples LANGUAGES CXX CUDA)
+else()
+	project (ResearchMExamples LANGUAGES CXX)	
+endif()
+
 set(ResearchM_ROOT_DIR ${CMAKE_SOURCE_DIR})
 
 
@@ -46,9 +54,10 @@ message(STATUS "${PROJECT_BINARY_DIR}/data_path.h created,\n DATA_PATH=${MATH_DA
 ###############################################
 # Options and config
 ###############################################
-include(ResearchM/ResearchM.cmake)
-include_directories(${ResearchM_INCLUDE_DIRS})
+
 Set_ResearchM_Env()
+include_directories(${ResearchM_INCLUDE_DIRS})
+message(STATUS "This is the include dir ${ResearchM_INCLUDE_DIRS}")
 
 ###############################################
 # Example Projects
