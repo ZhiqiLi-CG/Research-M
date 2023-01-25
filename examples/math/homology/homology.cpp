@@ -16,16 +16,16 @@
 
 int main() {
 	/// The test case is from: https://zhuanlan.zhihu.com/p/41264363
-	std::vector<std::vector<int>> complex_index{
+	zq::Array<zq::Array<int>> complex_index{
 		{0},{1},{2},{3},
 		{0,1},{1,2},{0,2},{2,3},{1,3},
 		{0,1,2}
 	};
-	std::vector<int> index{ 0,1,2,3 };
+	zq::Array<int> index{ 0,1,2,3 };
 	zq::Simplical_Complex<int> sc(&index[0], 4, complex_index);
 	std::cout << "First, test the NChain" << std::endl;
 	for (int i = 0; i < 4; i++) {
-		std::vector<zq::Simplex<int>> result;
+		zq::Array<zq::Simplex<int>> result;
 		sc.NChain(i, result);
 		std::cout << "chain of index:" << i << std::endl;
 		for (int j = 0; j < result.size(); j++) {
@@ -48,7 +48,7 @@ int main() {
 		std::cout << bounadry_m << std::endl;
 	}
 	std::cout << "Fourth, test the betti number" << std::endl;
-	std::vector<int> betti=sc.BettiNumber(3);
+	zq::Array<int> betti=sc.BettiNumber(3);
 	for (int i = 0; i < betti.size(); i++) {
 		printf("%d ", betti[i]);
 	}

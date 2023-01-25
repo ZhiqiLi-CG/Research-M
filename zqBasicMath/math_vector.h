@@ -13,7 +13,7 @@
 
 #include <assert.h>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <zqBasicMath/math_type_promote.h>
 #include<ResearchM_config.h>
 #ifdef  RESEARCHM_ENABLE_CUDA
@@ -24,8 +24,112 @@
 namespace zq{
 
 //	========================================
-//	Combination of data: Com2, Com3, Com4
+//	Combination of data: Com1,Com2, Com3, Com4
 //	========================================
+/**
+	One Data Container
+*/
+	template<class T>
+	class Com1 {
+	public:
+		T	x;
+
+		static const int dims;
+		typedef T Type;
+		typedef PROMOTE_T_TO_FLOAT ZQ_REAL;
+
+	public:
+		//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			Com1(const T x_val = 0) :x(x_val){}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			Com1(const T* val_ptr) : x(*val_ptr){}
+
+		template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif	
+			Com1(const Com1<TYPE> c) : x(c.x){}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			inline T& operator[] (const int id) {
+			assert(id == 0);	//	id must be valid, or the last value is returned
+			return x;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			inline const T& operator[] (const int id) const {
+			assert(id == 0);	//	id must be valid, or the last value is returned
+			return x;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			inline bool operator == (const Com1<T> vec) const {
+			return vec.x == x;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			inline bool operator != (const Com1<T> vec) const {
+			return vec.x != x;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			inline bool operator > (const Com1<T> vec) const {
+			return x > vec.x ? true : false;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			inline bool operator < (const Com1<T> vec) const {
+			return x < vec.x ? true : false;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			inline bool operator >= (const Com1<T> vec) const {
+			return x >= vec.x ? true : false;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+			inline bool operator <= (const Com1<T> vec) const {
+			return x <= vec.x ? true : false;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+		inline T Mul() const {
+			return x;
+		}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+		inline void Grid(T index, Com1& grid) const {
+			grid[0]=(T)fmod(index, x);
+		}
+	};
+
+
 /**
 	Two Data Container
 */
@@ -118,6 +222,21 @@ public:
 #endif
 	inline bool operator <= (const Com2<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? y <= vec.y : false);
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline T Mul() const {
+		return x*y;
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline void Grid(T index, Com2<T>& grid) const {
+		grid[0]=  (T)fmod(index, x*y) / y;
+		grid[1] = (T)fmod(index, y);
 	}
 };
 
@@ -224,6 +343,21 @@ public:
 	inline bool operator <= (const Com3<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? Com2<T>(y, z) <= Com2<T>(vec.y, vec.z) : false);
 	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline T Mul() const {
+		return x * y * z;
+	}
+#ifdef  RESEARCHM_ENABLE_CUDA
+		__host__ __device__
+#endif
+	inline void Grid(T index, Com3<T>&grid) const {
+			grid[0] = (T)fmod(index, x*y*z) / (y*z);
+			grid[1] = (T)fmod(index, y*z) / z;
+			grid[2] = (T)fmod(index, z);
+		}
 };
 
 /**
@@ -333,6 +467,22 @@ public:
 	inline bool operator <= (const Com4<T> vec) const {
 		return x < vec.x ? true : (x == vec.x ? Com3<T>(y, z, w) <= Com3<T>(vec.y, vec.z, vec.w) : false);
 	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline T Mul() const {
+		return x * y * z * w;
+	}
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+	inline void Grid(T index, Com4<T>& grid) const {
+		grid[0] = (T)fmod(index, x * y * z* w) / (y * z*w);
+		grid[1] = (T)fmod(index, y * z* w) / (z* w);
+		grid[2] = (T)fmod(index, z*w) / w;
+		grid[3] = (T)fmod(index, z);
+	}
 };
 
 //	========================================
@@ -364,8 +514,217 @@ template<class T> inline std::ostream& operator << (std::ostream& stream, const 
 
 
 //	========================================
-//	Vector: Vec2, Vec3, Vec4
+//	Vector: Vec1, Vec2, Vec3, Vec4
 //	========================================
+/**
+	Vector 1D
+*/
+template<class T>
+class Vec1 : public Com1<T> {
+public:
+	using Com1<T>::x;
+	using Com1<T>::dims;
+	using typename Com1<T>::Type;
+	using typename Com1<T>::ZQ_REAL;
+
+	//	constructors
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		Vec1(const T x_val = 0) :Com1<T>(x_val) {}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		Vec1(const T* val_ptr) : Com1<T>(val_ptr) {}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif	
+		Vec1(const Com1<TYPE> v) : Com1<T>(v) {}
+
+	//	operators
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1 operator - () const {
+		Vec1 result(-x);
+		return result;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1& operator = (const Vec1<TYPE> vec) {
+		x = vec.x;
+		return *this;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1& operator += (const Vec1<TYPE> vec) {
+		x += vec.x;
+		return *this;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1& operator -= (const Vec1<TYPE> vec) {
+		x -= vec.x;
+		return *this;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1& operator *= (const TYPE val) {
+		x *= val;
+		return *this;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1& operator /= (const TYPE val) {
+		x /= val;
+		return *this;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1<TYPE_PROMOTE(T, TYPE)> operator + (const Vec1<TYPE> vec) const {
+		Vec1<TYPE_PROMOTE(T, TYPE)> result(*this);
+		result += vec;
+		return result;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1<TYPE_PROMOTE(T, TYPE)> operator - (const Vec1<TYPE> vec) const {
+		Vec1<TYPE_PROMOTE(T, TYPE)> result(*this);
+		result -= vec;
+		return result;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1<TYPE_PROMOTE(T, TYPE)> operator * (const TYPE val) const {
+		Vec1<TYPE_PROMOTE(T, TYPE)> result(*this);
+		result *= val;
+		return result;
+	}
+
+	template<typename TYPE>
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1<TYPE_PROMOTE(T, TYPE)> operator / (const TYPE val) const {
+		Vec1<TYPE_PROMOTE(T, TYPE)> result(*this);
+		result /= val;
+		return result;
+	}
+
+	/**
+		Return normalized vector, but don't change old data
+	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1<ZQ_REAL> Normalize() const {
+		Vec1<ZQ_REAL> result(*this);
+		result.SetNormalize();
+		return result;
+	}
+
+	/**
+		Return rotated vector angle_rad(rad) counter-clockwise to original vector, but don't change old data
+	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1<ZQ_REAL> RotateRad(const ZQ_REAL angle_rad) const {
+		Vec1<ZQ_REAL> result(*this);
+		result.SetRotateRad(angle_rad);
+		return result;
+	}
+
+	/**
+		Return rotated vector angle_deg(degrees) counter-clockwise to original vector, but don't change old data
+	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1<ZQ_REAL> RotateDeg(const ZQ_REAL angle_deg) const {
+		Vec1<ZQ_REAL> result(*this);
+		result.SetRotateDeg(angle_deg);
+		return result;
+	}
+
+	//	set vectors
+	/**
+		Normalize the vector
+	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1& SetNormalize() {
+		ZQ_REAL length = Length();
+		(*this) /= length;
+		return *this;
+	}
+
+	/**
+		Rotate the vector angle_rad(rad) counter-clockwise
+	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1& SetRotateRad(const ZQ_REAL angle_rad) {
+		return *this;
+	}
+
+	/**
+		Rotate the vector angle_deg(degrees) counter-clockwise
+	*/
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline Vec1& SetRotateDeg(const ZQ_REAL angle_deg) {
+		return SetRotateRad(angle_deg * ZQ_PI / 180);
+	}
+
+	//	vector properties
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline ZQ_REAL SquareLength() const {
+		return x * x;
+	}
+
+#ifdef  RESEARCHM_ENABLE_CUDA
+	__host__ __device__
+#endif
+		inline ZQ_REAL Length() const {
+		return sqrt(SquareLength());
+	}
+
+};
+
+
 /**
 	Vector 2D
 */
@@ -1154,6 +1513,7 @@ inline Vec3<TYPE_PROMOTE(T1, T2)> cross(const Vec3<T1> a, const Vec3<T2> b){
 //	========================================
 //	Static member
 //	========================================
+template <class T> const int Com1<T>::dims = 1;
 template <class T> const int Com2<T>::dims = 2;
 template <class T> const int Com3<T>::dims = 3;
 template <class T> const int Com4<T>::dims = 4;
@@ -1162,6 +1522,22 @@ template <class T> const int Com4<T>::dims = 4;
 //	========================================
 //	Type Rename
 //	========================================
+
+
+typedef Com1<char>					char1;
+typedef Com1<unsigned char>			uchar1;
+typedef	Com1<short>					short1;
+typedef	Com1<unsigned short>		ushort1;
+typedef Com1<int>					int1;
+typedef Com1<unsigned int>			uint1;
+typedef Com1<long>					long1;
+typedef Com1<unsigned long>			ulong1;
+typedef Com1<long long>				longlong1;
+typedef Com1<unsigned long long>	ulonglong1;
+typedef Com1<float>					float1;
+typedef Com1<double>				double1;
+typedef Com1<long double>			longdouble1;
+
 typedef Com2<char>					char2;
 typedef Com2<unsigned char>			uchar2;
 typedef	Com2<short>					short2;
@@ -1203,6 +1579,20 @@ typedef Com4<unsigned long long>	ulonglong4;
 typedef Com4<float>					float4;
 typedef Com4<double>				double4;
 typedef Com4<long double>			longdouble4;
+
+typedef Vec1<char>					Vec1c;
+typedef Vec1<unsigned char>			Vec1uc;
+typedef Vec1<short>					Vec1s;
+typedef Vec1<unsigned short>		Vec1us;
+typedef Vec1<int>					Vec1i;
+typedef Vec1<unsigned int>			Vec1ui;
+typedef Vec1<long>					Vec1l;
+typedef Vec1<unsigned long>			Vec1ul;
+typedef Vec1<long long>				Vec1ll;
+typedef Vec1<unsigned long long>	Vec1ull;
+typedef Vec1<float>					Vec1f;
+typedef Vec1<double>				Vec1d;
+typedef Vec1<long double>			Vec1ld;
 
 typedef Vec2<char>					Vec2c;
 typedef Vec2<unsigned char>			Vec2uc;
@@ -1248,7 +1638,9 @@ typedef Vec4<long double>			Vec4ld;
 
 template<class T,int d=2>
 using Vec = typename std::conditional<d == 2, Vec2<T>,
-	typename std::conditional<d == 3, Vec3<T>, Vec4<T> >::type
+	typename std::conditional<d == 3, Vec3<T>, 
+		typename std::conditional<d == 4, Vec4<T>, Vec1<T> >::type
+	>::type
 >::type;
 
 template<class T, int d>

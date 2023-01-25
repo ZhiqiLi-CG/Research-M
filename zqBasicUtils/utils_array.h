@@ -51,8 +51,9 @@ namespace zq {
 		using ArrayIter = typename Array<T, side>::iterator;
 #define counting thrust::counting_iterator<int>
 
-		template<class T,int side>
+		template<class T,int side=HOST>
 		T* get_ptr(Array<T,side>& arr) {
+			if (arr.size() == 0) return nullptr;
 #ifdef RESEARCHM_ENABLE_CUDA
 			return thrust::raw_pointer_cast(&arr[0]);
 #else
@@ -60,8 +61,9 @@ namespace zq {
 #endif
 		}
 
-		template<class T, int side>
+		template<class T, int side=HOST>
 		const T* get_ptr(const Array<T, side>& arr) {
+			if (arr.size() == 0) return nullptr;
 #ifdef RESEARCHM_ENABLE_CUDA
 			return thrust::raw_pointer_cast(&arr[0]);
 #else
@@ -69,6 +71,32 @@ namespace zq {
 #endif
 		}
 
+		template<class T,int side = HOST>
+		void copy(ArrayIter<T, side> sb, ArrayIter<T, side> se, ArrayIter<T, side> de) {
+#ifdef RESEARCHM_ENABLE_CUDA
+			thrust::copy(sb, se, de)
+#else
+			std::copy(sb,se,de);
+#endif			
+		}
+
+		template<class T, int side=HOST>
+		void sort(ArrayIter<T, side> sb, ArrayIter<T, side> se) {
+#ifdef RESEARCHM_ENABLE_CUDA
+			thrust::sort(sb, se)
+#else
+			std::sort(sb, se);
+#endif			
+		}
+
+		template<class T, int side = HOST>
+		void fill(ArrayIter<T, side> sb, ArrayIter<T, side> se,T val) {
+#ifdef RESEARCHM_ENABLE_CUDA
+			thrust::fill(sb, se,val)
+#else
+			std::fill(sb, se,val);
+#endif			
+		}
 
 }
 

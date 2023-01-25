@@ -17,7 +17,7 @@
 #include<zqBasicUtils/utils_timer.h>
 #include<math_data_path.h>
 
-std::vector<std::string> file_list{
+zq::Array<std::string> file_list{
 	std::string(data_path) + std::string("/persistent_homology_one_cycle.dat"),
 	std::string(data_path) + std::string("/persistent_homology_one_cycle_random.dat"),
 	std::string(data_path) + std::string("/persistent_homology_two_cycle_random.dat"),
@@ -29,10 +29,10 @@ int simplex_dimension = 3;
 float max_epsilon = 0.67;
 int reso_epsilon = 100;
 
-std::vector<std::pair<float, float>> epsilon_interval;
-std::vector<int> feture_type;
-std::vector<float> epsilon_list;
-std::vector<zq::Simplical_Complex<zq::Vec3f>> complex_list;
+zq::Array<std::pair<float, float>> epsilon_interval;
+zq::Array<int> feture_type;
+zq::Array<float> epsilon_list;
+zq::Array<zq::Simplical_Complex<zq::Vec3f>> complex_list;
 
 int main() {
 	// 1. read points
@@ -47,7 +47,7 @@ int main() {
 	}
 	// 3. set the complex list
 	for (int i = 0; i < epsilon_list.size(); i++) {
-		std::vector<std::vector<int>> results;
+		zq::Array<zq::Array<int>> results;
 		zq::VRComplexConstruct(
 			epsilon_list[i],
 			points.value,

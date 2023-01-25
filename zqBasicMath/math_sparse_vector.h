@@ -14,6 +14,7 @@
 #include <vector>
 #include<functional>
 #include<zqBasicMath/math_utils.h>
+#include <zqBasicUtils/utils_array.h>
 namespace zq{
 
 //	========================================

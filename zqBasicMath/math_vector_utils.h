@@ -401,6 +401,35 @@ namespace zq{
 			return dot(r1, r2) / cross(r1, r2).Length();
 		}
 
+		// Parallel Bounding Box
+		template<class T, int d, int side>
+		void BoundingBox(
+			const Array<Vec<T, d>, side> data,
+			Vec<T, d>& ub,
+			Vec<T, d>& lb
+		) {
+			auto data_ptr = get_ptr<Vec<T, d>, side>(data);
+			for (int i = 0; i < d; i++) {
+				Array<T, side> dim_data(data.size());
+				auto phi = [data_ptr, i]
+#ifdef RESEARCHM_ENABLE_CUDA
+					__device__ __host__
+#endif
+					(int idx)->T {
+					return data_ptr[idx][i];
+				};
+				zq::utils::Calc_Each<decltype(phi), side>(
+					phi
+					, dim_data
+					);
+				T min_val, max_val;
+				zq::utils::Array_Min<T, side>(dim_data, min_val);
+				zq::utils::Array_Max<T, side>(dim_data, max_val);
+				ub[i] = max_val;
+				lb[i] = min_val;
+			}
+		}
+
 		///@}
 	}
 

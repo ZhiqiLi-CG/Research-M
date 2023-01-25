@@ -14,7 +14,7 @@
 
 int main() {
 	
-	std::vector<zq::SparseMatrixBase<int>*> matrix_ptr{
+	zq::Array<zq::SparseMatrixBase<int>*> matrix_ptr{
 		new zq::SparseMatrixCoo<int>(3, 4),
 		new zq::SparseMatrixCooSym<int>(3),
 		new zq::SparseMatrixCSR<int>(3, 4),

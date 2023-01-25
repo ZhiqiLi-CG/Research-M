@@ -23,7 +23,7 @@
 #include <zqBasicMath/math_sparse_matrix.h>
 #include <zqBasicMath/math_sparse_vector.h>
 #include <zqBasicUtils/utils_hash.h>
-
+#include <zqBasicUtils/utils_array.h>
 namespace zq {
 
 	/**
@@ -32,19 +32,23 @@ namespace zq {
 	template<typename T> // T should be index or coordinate
 	class Simplex {
 	public:
-		std::vector<T> points;
+		Array<T> points;
 		int simplex_index = -1; /// for complex to sort simplex
 		Simplex() {}
 		template<typename TYPE> Simplex(const TYPE* data, int dim_num) {
 			points.resize(dim_num);
 			points.assign(data, data + dim_num);
 		}
+		template<typename TYPE> Simplex(const Array<TYPE>& data) {
+			points.resize(data.size());
+			points.assign(get_ptr<TYPE>(data), get_ptr<TYPE>(data) + data.size());
+		}
 	public:
 		/**
 			find the sub simplex of this simplex
 		*/
-		void FindSubSimplex(std::vector<Simplex<T>>& subsimplex) {
-			std::vector<bool> use(subsimplex.size());
+		void FindSubSimplex(Array<Simplex<T>>& subsimplex) {
+			Array<bool> use(subsimplex.size());
 			while (AddIndex(use)) {
 				subsimplex.push_back(CreateSimplexByIndex(use));
 			}
@@ -72,8 +76,8 @@ namespace zq {
 			return points.size();
 		}
 		
-		void SortSimplex(std::vector<Simplex<T>>& subsimplex) {
-			std::sort(subsimplex.begin(), subsimplex.end());
+		void SortSimplex(Array<Simplex<T>>& subsimplex) {
+			zq::sort<Simplex<T>>(subsimplex.begin(), subsimplex.end());
 		}
 		
 		T index(int i) const {
@@ -85,8 +89,8 @@ namespace zq {
 
 	protected:
 		// following two functions are used to find all subsimplex 
-		bool AddIndex(std::vector<bool>& index) {
-			std::vector<bool> tem_index = index;
+		bool AddIndex(Array<bool>& index) {
+			Array<bool> tem_index = index;
 			for (int i = 0; i < tem_index.size(); i++) {
 				if (tem_index[i] == false) {
 					tem_index[i] = true;
@@ -99,8 +103,8 @@ namespace zq {
 			}
 			return false;
 		}
-		Simplex<T> CreateSimplexByIndex(std::vector<bool>& index) {
-			std::vector<T> new_points;
+		Simplex<T> CreateSimplexByIndex(Array<bool>& index) {
+			Array<T> new_points;
 			for (int i = 0; i < index.size(); i++) {
 				if (index[i]) {
 					new_points.push_back(points[i]);
@@ -150,8 +154,8 @@ namespace zq{
 	template<typename T> 
 	class Simplical_Complex {
 	public:
-		std::vector<T> points;
-		std::vector<Simplex<int>> simplex;
+		Array<T> points;
+		Array<Simplex<int>> simplex;
 		Simplical_Complex() {}
 	
 		template<typename TYPE> Simplical_Complex(const TYPE* data, int dim_num) {
@@ -159,23 +163,82 @@ namespace zq{
 			points.assign(data, data + dim_num);
 		}
 		
-		template<typename TYPE> Simplical_Complex(const TYPE* data, int dim_num,const std::vector<Simplex<int>>& simplex) {
+		template<typename TYPE> Simplical_Complex(const TYPE* data, int dim_num,const Array<Simplex<int>>& simplex) {
 			points.resize(dim_num);
 			points.assign(data, data + dim_num);
 			this->simplex = simplex;
 		}
 		
-		template<typename TYPE> Simplical_Complex(const TYPE* data, int dim_num, const std::vector<std::vector<int>>& simplex) {
+		template<typename TYPE> Simplical_Complex(const TYPE* data, int dim_num, const Array<Array<int>>& simplex) {
 			points.resize(dim_num);
 			points.assign(data, data + dim_num);
 			this->simplex.resize(simplex.size());
-			std::vector<std::vector<int>> tem_simplex = simplex;
+			Array<Array<int>> tem_simplex = simplex;
 			for (int i = 0; i < simplex.size(); i++) {
 				this->simplex[i] = Simplex<int>(&tem_simplex[i][0], simplex[i].size());
 			}
 		}
 	
 	public:
+		void AddSimplex(const Simplex<int>& simplex) {
+			this->simplex.push_back(simplex);
+		}
+
+		void AddSimplex(const Array<int>& simplex) {
+			this->simplex.push_back(Simplex<int>(&simplex[0],simplex.size()));
+		}
+
+		void AddSimplex(const Simplex<int>& simplex,std::unordered_set<Simplex<int>>& simplex_set) {
+			if (simplex_set.find(simplex) == simplex_set.end()) {
+				this->simplex.push_back(simplex);
+				simplex_set.insert(simplex);
+			}
+		}
+
+		void AddSimplex(const Array<int>& simplex_raw, std::unordered_set<Simplex<int>>& simplex_set) {
+			Simplex<int> simplex=Simplex<int>(&simplex_raw[0], simplex_raw.size());
+			if (simplex_set.find(simplex) == simplex_set.end()) {
+				this->simplex.push_back(simplex);
+				simplex_set.insert(simplex);
+			}
+		}
+
+		void AddComplex(const Simplex<int>& simplex) {
+			for (int i = 1; i <= simplex.size(); i++) {
+				Array<Array<int>> results;
+				auto filter = [](const Array<int>&)->bool {
+					return true;
+				};
+				FilterTuples(
+					simplex,
+					filter,
+					i,
+					results
+				);
+				for (int j = 0; j < results.size(); j++) {
+					AddSimplex(results[j]);
+				}
+			}
+		}
+
+		void AddComplex(const Simplex<int>& simplex, const std::unordered_set<Simplex<int>>& simplex_set) {
+			for (int i = 1; i <= simplex.size(); i++) {
+				Array<Array<int>> results;
+				std::function<bool(const Array<int>&)> filter = [](const Array<int>&)->bool {
+					return true;
+				};
+				FilterTuples(
+					simplex,
+					filter,
+					i,
+					results
+				);
+				for (int j = 0; j < results.size(); j++) {
+					AddSimplex(results[j], simplex_set);
+				}
+			}
+		}
+
 		int SimplexNumber() const{
 			return simplex.size();
 		}
@@ -186,7 +249,7 @@ namespace zq{
 		/**
 			return all n-chains of the complex simplex
 		*/
-		void NChain(int n,std::vector<Simplex<int>>& result) {
+		void NChain(int n,Array<Simplex<int>>& result) {
 			for (int i = 0; i < simplex.size(); i++) {
 				if(simplex[i].Dim()==n+1){
 					result.push_back(simplex[i]);
@@ -194,12 +257,12 @@ namespace zq{
 			}
 		}
 		
-		std::vector<int> BettiNumber(int n = -1) {
-			std::vector<int> betti;
-			std::vector<std::vector<Simplex<int>>> chains;
-			chains.push_back(std::vector<Simplex<int>>());
+		Array<int> BettiNumber(int n = -1) {
+			Array<int> betti;
+			Array<Array<Simplex<int>>> chains;
+			chains.push_back(Array<Simplex<int>>());
 			for (int i = 0;; i++) {
-				std::vector<Simplex<int>> tem;
+				Array<Simplex<int>> tem;
 				NChain(i, tem);
 				if (tem.size() != 0) {
 					chains.push_back(tem);
@@ -209,8 +272,8 @@ namespace zq{
 				}
 			}
 			if (n == -1) n = chains.size()-1;
-			std::vector<int> rank(n+1); // 0,1,2,...,n-2
-			std::vector<int> nullity(n+1);// 1,2,...,n-1
+			Array<int> rank(n+1); // 0,1,2,...,n-2
+			Array<int> nullity(n+1);// 1,2,...,n-1
 			for (int j = 0; j < n; j++) {
 				if (j == chains.size() - 1) {
 					rank[j] = nullity[j] = 0;
@@ -236,14 +299,14 @@ namespace zq{
 		}
 		
 		DenseMatrix<int> BoundaryMatrix(int p,int n) {
-			std::vector<Simplex<int>> pchain, nchain;
+			Array<Simplex<int>> pchain, nchain;
 			NChain(p, pchain);
 			NChain(n, nchain);
 			return BoundaryMatrix(pchain,nchain);
 		}
 
 		SparseMatrixLIL<int> BoundaryMatrixSparse(int p, int n) {
-			std::vector<Simplex<int>> pchain, nchain;
+			Array<Simplex<int>> pchain, nchain;
 			NChain(p, pchain);
 			NChain(n, nchain);
 			return BoundaryMatrixSparse(pchain, nchain);
@@ -255,7 +318,7 @@ namespace zq{
 			int& rank,
 			int& nullity
 		) {
-			std::vector<Simplex<int>> pchain, nchain;
+			Array<Simplex<int>> pchain, nchain;
 			NChain(p, pchain);
 			NChain(n, nchain);
 			DenseMatrix<int> boundary_m=BoundaryMatrix(pchain, nchain);
@@ -272,7 +335,7 @@ namespace zq{
 			int& rank,
 			int& nullity
 		) {
-			std::vector<Simplex<int>> pchain, nchain;
+			Array<Simplex<int>> pchain, nchain;
 			NChain(p, pchain);
 			NChain(n, nchain);
 			SparseMatrixLIL<int> boundary_m = BoundaryMatrixSparse(pchain, nchain);
@@ -349,7 +412,7 @@ namespace zq{
 
 		template<typename T>
 		static void AssignSimplexIndex(
-				std::vector<zq::Simplical_Complex<T>>& complex_list
+				Array<zq::Simplical_Complex<T>>& complex_list
 			) {
 			for (int i = 0; i < complex_list[0].simplex.size(); i++) {
 				complex_list[0].simplex[i].simplex_index = 0;
@@ -373,11 +436,11 @@ namespace zq{
 		
 		template<typename T>
 		static void AssignSimplexIndexSort(
-			std::vector<zq::Simplical_Complex<T>>& complex_list
+			Array<zq::Simplical_Complex<T>>& complex_list
 		) {
 			AssignSimplexIndex(complex_list);
 			for (int i = 0; i < complex_list.size(); i++) {
-				std::sort(complex_list[i].simplex.begin(), complex_list[i].simplex.end());
+				zq::sort<Simplex<int>>(complex_list[i].simplex.begin(), complex_list[i].simplex.end());
 				//printf("----------------------------------------------------------------\n");
 				//printf("complex_list index %d\n",i);
 				//for (int j = 0; j < complex_list[i].SimplexNumber(); j++) {
@@ -392,7 +455,7 @@ namespace zq{
 		
 		static void ReadIntervals(
 			const DenseMatrix<int>& boundary_m,
-			std::vector<std::pair<int, int>>& interval
+			Array<std::pair<int, int>>& interval
 		){
 			std::unordered_map<int, int> start_map;
 			for (int i = 0; i < Cols(boundary_m); i++) {
@@ -416,7 +479,7 @@ namespace zq{
 
 		static void ReadIntervals(
 			const SparseMatrixLIL<int>& boundary_m,
-			std::vector<std::pair<int, int>>& interval
+			Array<std::pair<int, int>>& interval
 		) {
 			std::unordered_map<int, int> start_map;
 			for (int i = 0; i < boundary_m.row_num; i++) {
@@ -556,8 +619,8 @@ namespace zq{
 		}
 		
 		static DenseMatrix<int> BoundaryMatrix(
-			const std::vector<Simplex<int>>& pchain,
-			const std::vector<Simplex<int>>& nchain
+			const Array<Simplex<int>>& pchain,
+			const Array<Simplex<int>>& nchain
 		) {
 			//special -1
 			if (pchain.size() == 0) {
@@ -576,8 +639,8 @@ namespace zq{
 		}
 
 		static SparseMatrixLIL<int> BoundaryMatrixSparse(
-			const std::vector<Simplex<int>>& pchain,
-			const std::vector<Simplex<int>>& nchain
+			const Array<Simplex<int>>& pchain,
+			const Array<Simplex<int>>& nchain
 		) {
 			//special -1
 			if (pchain.size() == 0) {
@@ -691,12 +754,12 @@ namespace zq{
 		Helper function for VR complex construction
 	*/
 	void _FindSubsets(
-		std::vector<int>& subset,
-		const std::vector<int>& index_set,
+		Array<int>& subset,
+		const Array<int>& index_set,
 		int k,
 		int start,
-		const std::function<bool(const std::vector<int>&)>& filter,
-		std::vector<std::vector<int>>& results
+		const std::function<bool(const Array<int>&)>& filter,
+		Array<Array<int>>& results
 	) {
 		//printf("_FindSubsets, subset.size():%d,k:%d,start:%d\n", subset.size(), k, start);
 		if (!filter(subset)) return;
@@ -715,12 +778,12 @@ namespace zq{
 		Helper function for VR complex construction
 	*/
 	void FilterTuples(
-		const std::vector<int>& index_set,
-		const std::function<bool(const std::vector<int>&)>& filter,
+		const Array<int>& index_set,
+		const std::function<bool(const Array<int>&)>& filter,
 		int k,
-		std::vector<std::vector<int>>& results
+		Array<Array<int>>& results
 	) {
-		std::vector<int> subset;
+		Array<int> subset;
 		_FindSubsets(subset, index_set, k, 0, filter, results);
 	}
 
@@ -738,13 +801,13 @@ namespace zq{
 	template<typename ParaType, typename PointType>
 	void VRComplexConstruct(
 		const ParaType& epsilon,
-		const std::vector<PointType>& points,
+		const Array<PointType>& points,
 		int k,
-		std::vector<std::vector<int>>& results
+		Array<Array<int>>& results
 	) {
-		std::vector<int> index_set(points.size());
+		Array<int> index_set(points.size());
 		for (int i = 0; i < index_set.size(); i++) index_set[i] = i;
-		std::function<bool(const std::vector<int>&)> filter = [&](const std::vector<int>& index) {
+		std::function<bool(const Array<int>&)> filter = [&](const Array<int>& index) {
 			for (int i = 0; i < index.size(); i++) {
 				for (int j = i + 1; j < index.size(); j++) {
 					//std::cout<<points[i] << ","<< points[j] << "," << epsilon<<"\t";
@@ -762,11 +825,11 @@ namespace zq{
 	}
 
 	void FindWitness(
-		const std::vector<int>& index,
+		const Array<int>& index,
 		int m,
-		std::vector<int>& witness
+		Array<int>& witness
 	) {
-		std::vector<int> tem_index(index);
+		Array<int> tem_index(index);
 		for (int i = tem_index.size() - 1; i >= 0; i--) {
 			int j = (int)(randNumber(0, i + 1));
 			mySwap(tem_index[i], tem_index[j]);
@@ -780,9 +843,9 @@ namespace zq{
 	void FindWitness(
 		int n,
 		int m,
-		std::vector<int>& witness
+		Array<int>& witness
 	) {
-		std::vector<int> index(n);
+		Array<int> index(n);
 		for (int i = 0; i < n; i++) index[i] = i;
 		FindWitness(index, m, witness);
 	}
@@ -790,12 +853,12 @@ namespace zq{
 	template<typename ParaType, typename PointType>
 	void VRWitnessComplexConstruct(
 		const ParaType& epsilon,
-		const std::vector<PointType>& points,
-		const std::vector<int>& witness_index,
+		const Array<PointType>& points,
+		const Array<int>& witness_index,
 		int k,
-		std::vector<std::vector<int>>& results
+		Array<Array<int>>& results
 	) {
-		std::vector<int> index_set(witness_index);
+		Array<int> index_set(witness_index);
 		std::unordered_set<std::pair<int, int>, utils::BitwiseHasher<std::pair<int, int>>> allowed_pair;
 		std::function<bool(const PointType&, const PointType&)> distance_filter = [&](
 			const PointType& pos1,
@@ -815,7 +878,7 @@ namespace zq{
 				}
 			}
 		}
-		std::function<bool(const std::vector<int>&)> filter = [&](const std::vector<int>& index) {
+		std::function<bool(const Array<int>&)> filter = [&](const Array<int>& index) {
 			for (int i = 0; i < index.size(); i++) {
 				for (int j = i + 1; j < index.size(); j++) {
 					if (allowed_pair.find(std::pair<int,int>(index[i],index[j]))==allowed_pair.end() &&
@@ -837,11 +900,11 @@ namespace zq{
 	*/
 	template<typename Type>
 	void CalculatePersistentData(
-		const std::vector<float>& epsilon_list,
+		const Array<float>& epsilon_list,
 		float max_epsilon,
-		std::vector<Simplical_Complex<Type>>& complex_list,
-		std::vector<std::pair<float, float>>& epsilon_interval,
-		std::vector<int>& feture_type
+		Array<Simplical_Complex<Type>>& complex_list,
+		Array<std::pair<float, float>>& epsilon_interval,
+		Array<int>& feture_type
 	) {
 		Simplical_Complex<Type>::AssignSimplexIndexSort(complex_list);
 		DenseMatrix<int> memory_m;
@@ -850,7 +913,7 @@ namespace zq{
 
 		//std::cout << "boundary_m:" << std::endl;
 		//std::cout << boundary_m << std::endl;
-		std::vector<std::pair<int, int>> interval;
+		Array<std::pair<int, int>> interval;
 		Simplical_Complex<Type>::ReadIntervals(boundary_m, interval);
 		if(!Simplical_Complex<Type>::CheckReduced(boundary_m)){
 			throw "bouandry_m is not redueced";
@@ -879,11 +942,11 @@ namespace zq{
 
 	template<typename Type>
 	void CalculatePersistentDataSparse(
-		const std::vector<float>& epsilon_list,
+		const Array<float>& epsilon_list,
 		float max_epsilon,
-		std::vector<Simplical_Complex<Type>>& complex_list,
-		std::vector<std::pair<float, float>>& epsilon_interval,
-		std::vector<int>& feture_type
+		Array<Simplical_Complex<Type>>& complex_list,
+		Array<std::pair<float, float>>& epsilon_interval,
+		Array<int>& feture_type
 	) {
 		//printf("begin\n");
 		Simplical_Complex<Type>::AssignSimplexIndexSort(complex_list);
@@ -896,7 +959,7 @@ namespace zq{
 		//std::cout << "boundary_m:" << std::endl;
 		//std::cout << boundary_m << std::endl;
 
-		std::vector<std::pair<int, int>> interval;
+		Array<std::pair<int, int>> interval;
 		Simplical_Complex<Type>::ReadIntervals(boundary_m, interval);
 		if (!Simplical_Complex<Type>::CheckReduced(boundary_m)) {
 			throw "bouandry_m is not redueced";
