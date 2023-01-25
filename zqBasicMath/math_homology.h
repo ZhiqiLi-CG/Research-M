@@ -39,9 +39,15 @@ namespace zq {
 			points.resize(dim_num);
 			points.assign(data, data + dim_num);
 		}
-		template<typename TYPE> Simplex(const Array<TYPE>& data) {
+#ifdef RESEARCHM_ENABLE_CUDA
+		template<typename TYPE> Simplex(const thrust::host_vector<TYPE>& data) {
 			points.resize(data.size());
 			points.assign(get_ptr<TYPE>(data), get_ptr<TYPE>(data) + data.size());
+		}
+#endif
+		template<typename TYPE> Simplex(const std::vector<TYPE>& data) {
+			points.resize(data.size());
+			points.assign(data.begin(), data.begin() + data.size());
 		}
 	public:
 		/**

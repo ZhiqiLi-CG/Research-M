@@ -204,24 +204,24 @@ namespace zq {
 				complex.points = center;
 				std::unordered_set<Simplex<int>> simplex_set;
 				for (int i = 0; i < center.size(); i++) {
-					complex.simplex.push_back(Simplex<int>(Array<int>{i}));
-					simplex_set.insert(Simplex<int>(Array<int>{i}));
+					complex.simplex.push_back(Simplex<int>(std::vector<int>{i}));
+					simplex_set.insert(Simplex<int>(std::vector<int>{i}));
 				}
 				for (int i = 0; i < clusters_map_num.size(); i++) {
 					if constexpr (Filter::res_dim == 1) {
 						if (clusters_map_num[i] == 2) {
-							complex.AddSimplex(Simplex<int>(Array<int>{clusters_map[0][i], clusters_map[1][i]}), simplex_set);
+							complex.AddSimplex(Simplex<int>(std::vector<int>{clusters_map[0][i], clusters_map[1][i]}), simplex_set);
 						}
 					}
 					else if constexpr (Filter::res_dim == 2) {
 						if (clusters_map_num[i] == 2) {
-							complex.AddSimplex(Simplex<int>(Array<int>{clusters_map[0][i], clusters_map[1][i]}), simplex_set);
+							complex.AddSimplex(Simplex<int>(std::vector<int>{clusters_map[0][i], clusters_map[1][i]}), simplex_set);
 						}
 						else if (clusters_map_num[i] == 3) {
-							complex.AddSimplex(Simplex<int>(Array<int>{clusters_map[0][i], clusters_map[1][i], clusters_map[2][i]}), simplex_set);
+							complex.AddSimplex(Simplex<int>(std::vector<int>{clusters_map[0][i], clusters_map[1][i], clusters_map[2][i]}), simplex_set);
 						}
 						else if (clusters_map_num[i] == 4) {
-							complex.AddSimplex(Simplex<int>(Array<int>{clusters_map[0][i], clusters_map[1][i], clusters_map[2][i], clusters_map[3][i]}), simplex_set);
+							complex.AddSimplex(Simplex<int>(std::vector<int>{clusters_map[0][i], clusters_map[1][i], clusters_map[2][i], clusters_map[3][i]}), simplex_set);
 						}
 					}
 				}

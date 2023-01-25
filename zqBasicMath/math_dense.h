@@ -34,7 +34,7 @@ namespace zq{
 template<class T>
 class DenseVector{
 public:
-	std::vector<T>	value;
+	zq::Array<T>	value;
 
 	typedef PROMOTE_T_TO_FLOAT ZQ_REAL;
 
