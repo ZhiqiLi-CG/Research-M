@@ -14,12 +14,12 @@
 
 int main() {
 	
-	zq::Array<zq::SparseMatrixBase<int>*> matrix_ptr{
-		new zq::SparseMatrixCoo<int>(3, 4),
-		new zq::SparseMatrixCooSym<int>(3),
-		new zq::SparseMatrixCSR<int>(3, 4),
-		new zq::SparseMatrixCSRSym<int>(3),
-		new zq::SparseMatrixLIL<int>(3, 4) };
+	zq::Array<zq::SparseMatrixBase<int>*> matrix_ptr(5);
+	matrix_ptr[0] = new zq::SparseMatrixCoo<int>(3, 4);
+	matrix_ptr[1] = new zq::SparseMatrixCooSym<int>(3);
+	matrix_ptr[2] = new zq::SparseMatrixCSR<int>(3, 4);
+	matrix_ptr[3] = new zq::SparseMatrixCSRSym<int>(3);
+	matrix_ptr[4] = new zq::SparseMatrixLIL<int>(3, 4);
 	// test insert
 	for (int i = 0; i < 5; i++) {
 		matrix_ptr[i]->InsertElement(100, 1, 2);

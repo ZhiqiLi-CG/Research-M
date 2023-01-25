@@ -17,7 +17,7 @@
 #include<zqBasicUtils/utils_timer.h>
 #include<math_data_path.h>
 
-zq::Array<std::string> file_list{
+std::vector<std::string> file_list{
 	std::string(data_path) + std::string("/persistent_homology_one_cycle.dat"),
 	std::string(data_path) + std::string("/persistent_homology_one_cycle_random.dat"),
 	std::string(data_path) + std::string("/persistent_homology_two_cycle_random.dat"),
@@ -48,7 +48,7 @@ int main() {
 	// 3. set the complex list
 	for (int i = 0; i < epsilon_list.size(); i++) {
 		zq::Array<zq::Array<int>> results;
-		zq::VRComplexConstruct(
+		zq::VRComplexConstruct<float, zq::Vec3f>(
 			epsilon_list[i],
 			points.value,
 			simplex_dimension,
@@ -60,7 +60,7 @@ int main() {
 	auto save_complex_list = complex_list;
 	zq::utils::Timer dense_timeer;
 	dense_timeer.Start();
-	zq::CalculatePersistentData(
+	zq::CalculatePersistentData< zq::Vec3f>(
 		epsilon_list,
 		max_epsilon,
 		complex_list,
@@ -79,7 +79,7 @@ int main() {
 
 	zq::utils::Timer sparse_timeer;
 	sparse_timeer.Start();
-	zq::CalculatePersistentDataSparse(
+	zq::CalculatePersistentDataSparse< zq::Vec3f>(
 		epsilon_list,
 		max_epsilon,
 		save_complex_list,

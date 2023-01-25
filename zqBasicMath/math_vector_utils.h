@@ -20,6 +20,7 @@
 #include <zqBasicUtils/utils_cuda.h>
 #include <zqBasicUtils/utils_array.h>
 #endif //  RESEARCHM_ENABLE_CUDA
+#include <zqBasicUtils/utils_array_func.h>
 
 namespace zq{
 	namespace math {

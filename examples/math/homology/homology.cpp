@@ -16,12 +16,32 @@
 
 int main() {
 	/// The test case is from: https://zhuanlan.zhihu.com/p/41264363
-	zq::Array<zq::Array<int>> complex_index{
+	zq::Array<zq::Array<int>> complex_index(10);
+	complex_index[0].resize(1); complex_index[0][0] = 1;
+	complex_index[1].resize(1); complex_index[1][0] = 2;
+	complex_index[2].resize(1); complex_index[2][0] = 3;
+	complex_index[3].resize(1); complex_index[3][0] = 4;
+
+	complex_index[4].resize(2); complex_index[4][0] = 0; complex_index[4][1] = 1;
+	complex_index[5].resize(2); complex_index[5][0] = 1; complex_index[5][1] = 2;
+	complex_index[6].resize(2); complex_index[6][0] = 0; complex_index[6][1] = 2;
+	complex_index[7].resize(2); complex_index[7][0] = 2; complex_index[7][1] = 3;
+	complex_index[8].resize(2); complex_index[8][0] = 1; complex_index[8][1] = 3;
+	
+	complex_index[9].resize(3); complex_index[9][0] = 0; complex_index[9][1] = 1; complex_index[9][2] = 2; 
+	
+	/* {
 		{0},{1},{2},{3},
 		{0,1},{1,2},{0,2},{2,3},{1,3},
 		{0,1,2}
-	};
-	zq::Array<int> index{ 0,1,2,3 };
+	};*/
+
+	zq::Array<int> index(4);
+	index[0] = 0;
+	index[1] = 1;
+	index[2] = 2;
+	index[3] = 3;
+	//{ 0, 1, 2, 3 };
 	zq::Simplical_Complex<int> sc(&index[0], 4, complex_index);
 	std::cout << "First, test the NChain" << std::endl;
 	for (int i = 0; i < 4; i++) {

@@ -401,7 +401,7 @@ namespace zq {
 		if (normal.z > 0.995)	//	very close to z direction, don't need to rotate
 			rot.SetIdentity();
 		else					//	need to rotate in order to improve fitting result
-			rot.SetRotationRad(zq::cross(normal, z), zq::angleRadBetweenVectors(normal, z));
+			rot.SetRotationRad(zq::cross(normal, z), zq::math::angleRadBetweenVectors(normal, z));
 
 		Matrix3x3<PROMOTE_T_TO_FLOAT>	mat(0, 0, 0, 0, 0, 0, 0, 0, 0);
 		Vec3<PROMOTE_T_TO_FLOAT>		rhs(0, 0, 0);
@@ -508,7 +508,7 @@ namespace zq {
 		if (normal.z > 0.995)	//	very close to z direction, don't need to rotate
 			rot.SetIdentity();
 		else					//	need to rotate in order to improve fitting result
-			rot.SetRotationRad(zq::cross(normal, z), zq::angleRadBetweenVectors(normal, z));
+			rot.SetRotationRad(zq::cross(normal, z), zq::math::angleRadBetweenVectors(normal, z));
 
 		Matrix3x3<PROMOTE_T_TO_FLOAT>	mat(0, 0, 0, 0, 0, 0, 0, 0, 0);
 		Vec3<PROMOTE_T_TO_FLOAT>		rhs(0, 0, 0);

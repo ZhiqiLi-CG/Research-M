@@ -18,6 +18,42 @@
 #include <iostream>
 namespace zq {
 	namespace utils {
+		template<class Fvoid, class T, int side = HOST> void Exec_Each(Fvoid f, Array<T, side>& a) {
+			int N = a.size();
+			if constexpr (side == HOST) {
+#pragma omp parallel for
+				for (int i = 0; i < N; i++) f(i);
+			}
+#ifdef RESEARCHM_ENABLE_CUDA
+			else if constexpr (side == DEVICE) {
+				thrust::for_each(
+					counting(0),
+					counting(0) + N,
+					f
+				);
+			}
+#endif
+		}
+		// For side == DEVICE, f must be have pointer reference
+		template<class F1int, int side = HOST> void Calc_Each(F1int f, Array<decltype(f(0)), side>& arr) {
+			int N = arr.size();
+			arr.resize(N);
+			if constexpr (side == HOST) {
+#pragma omp parallel for
+				for (int i = 0; i < N; i++) arr[i] = f(i);
+			}
+#ifdef RESEARCHM_ENABLE_CUDA
+			else if constexpr (side == DEVICE) {
+				thrust::transform(
+					counting(0),
+					counting(0) + N,
+					arr.begin(),
+					f
+				);
+			}
+#endif
+		}
+
 		//check if an Array contains invalid values, like nan, inf
 		template<class T, int side = HOST>
 		bool Numerical_Check(const Array<T, side>& arr, const std::string& name = "", bool crash_on_fail = true) {
@@ -106,7 +142,7 @@ namespace zq {
 				(const int idx)->T {
 				return a_ptr[idx] + b_ptr[idx] * c;
 			};
-			Calc_Each<decltype(add_f), side>(
+			zq::utils::Calc_Each<decltype(add_f), side>(
 				add_f,
 				a
 				);
@@ -216,7 +252,7 @@ namespace zq {
 				T* a_ptr = thrust::raw_pointer_cast(&a[0]);
 				Calc_Each(
 					[a_ptr]__device__ __host__ (const int i) ->T {
-						return abs(a_ptr[i])
+					return abs(a_ptr[i]);
 					}
 					, res
 				);
@@ -238,7 +274,7 @@ namespace zq {
 				}
 			}
 #ifdef RESEARCHM_ENABLE_CUDA
-			else if constexpr (side == DEVICE)
+			else if constexpr (side == DEVICE){
 				Array<T, side> tem(a.size());
 				Array_Abs<T, side>(a,tem);
 				val = thrust::reduce(tem.begin, tem.end(), (T)0, thrust::plus <T>());
@@ -264,41 +300,7 @@ namespace zq {
 			#endif
 		}
 
-		template<class Fvoid, class T, int side = HOST> void Exec_Each(Fvoid f, Array<T,side>& a) {
-			int N = a.size();
-			if constexpr (side == HOST) {
-				#pragma omp parallel for
-				for (int i = 0; i < N; i++) f(i);
-			}
-			#ifdef RESEARCHM_ENABLE_CUDA
-				else if constexpr (side == DEVICE) {
-					thrust::for_each(
-						counting(0),
-						counting(0) + N,
-						f
-					);
-				}
-			#endif
-		}
-		// For side == DEVICE, f must be have pointer reference
-		template<class F1int, int side = HOST> void Calc_Each(F1int f, Array<decltype(f(0)), side>& arr) {
-			int N = arr.size();
-			arr.resize(N);
-			if constexpr (side == HOST) {
-				#pragma omp parallel for
-				for (int i = 0; i < N; i++) arr[i] = f(i);
-			}
-			#ifdef RESEARCHM_ENABLE_CUDA
-				else if constexpr  (side == DEVICE) {
-					thrust::transform(
-						counting(0),
-						counting(0)+N,
-						arr.begin(),
-						f
-					);
-				}
-			#endif
-		}
+
 	}
 }
 

@@ -438,7 +438,7 @@ namespace zq{
 		static void AssignSimplexIndexSort(
 			Array<zq::Simplical_Complex<T>>& complex_list
 		) {
-			AssignSimplexIndex(complex_list);
+			AssignSimplexIndex<T>(complex_list);
 			for (int i = 0; i < complex_list.size(); i++) {
 				zq::sort<Simplex<int>>(complex_list[i].simplex.begin(), complex_list[i].simplex.end());
 				//printf("----------------------------------------------------------------\n");
@@ -906,7 +906,7 @@ namespace zq{
 		Array<std::pair<float, float>>& epsilon_interval,
 		Array<int>& feture_type
 	) {
-		Simplical_Complex<Type>::AssignSimplexIndexSort(complex_list);
+		Simplical_Complex<Type>::AssignSimplexIndexSort<Type>(complex_list);
 		DenseMatrix<int> memory_m;
 		int final_index = complex_list.size() - 1;
 		DenseMatrix<int> boundary_m = complex_list[final_index].ReducedBoundaryMatrix(memory_m);
@@ -949,7 +949,7 @@ namespace zq{
 		Array<int>& feture_type
 	) {
 		//printf("begin\n");
-		Simplical_Complex<Type>::AssignSimplexIndexSort(complex_list);
+		Simplical_Complex<Type>::AssignSimplexIndexSort<Type>(complex_list);
 		printf("end assign index\n");
 		SparseMatrixLIL<int> memory_m;
 		int final_index = complex_list.size() - 1;

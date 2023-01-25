@@ -31,6 +31,7 @@
 	#include <thrust/functional.h>
 	#include <thrust/inner_product.h>
 	#include <thrust/extrema.h>
+	#include<thrust/sort.h>
 #else
 	#include<vector>
 #endif
@@ -74,7 +75,7 @@ namespace zq {
 		template<class T,int side = HOST>
 		void copy(ArrayIter<T, side> sb, ArrayIter<T, side> se, ArrayIter<T, side> de) {
 #ifdef RESEARCHM_ENABLE_CUDA
-			thrust::copy(sb, se, de)
+			thrust::copy(sb, se, de);
 #else
 			std::copy(sb,se,de);
 #endif			
@@ -83,7 +84,7 @@ namespace zq {
 		template<class T, int side=HOST>
 		void sort(ArrayIter<T, side> sb, ArrayIter<T, side> se) {
 #ifdef RESEARCHM_ENABLE_CUDA
-			thrust::sort(sb, se)
+			thrust::sort(sb, se);
 #else
 			std::sort(sb, se);
 #endif			
@@ -92,7 +93,7 @@ namespace zq {
 		template<class T, int side = HOST>
 		void fill(ArrayIter<T, side> sb, ArrayIter<T, side> se,T val) {
 #ifdef RESEARCHM_ENABLE_CUDA
-			thrust::fill(sb, se,val)
+			thrust::fill(sb, se, val);
 #else
 			std::fill(sb, se,val);
 #endif			
